@@ -21,7 +21,9 @@ namespace LinqToVso
         {
             //TODO: Replace the constant VsoQueryable arg with the queryable collection.
             if (c.Type.Name == "VsoQueryable`1")
+            {
                 return Expression.Constant(this.queryableItems);
+            }
 
             return c;
         }

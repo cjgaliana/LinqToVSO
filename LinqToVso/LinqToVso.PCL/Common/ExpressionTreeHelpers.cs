@@ -42,7 +42,7 @@ namespace LinqToVso
                 return false;
             }
 
-            var be = (BinaryExpression)exp;
+            var be = (BinaryExpression) exp;
 
             // Assert.
             if (IsSpecificMemberExpression(be.Left, declaringType, memberName)
@@ -73,8 +73,8 @@ namespace LinqToVso
                     : exp;
 
             return ((tempExp is MemberExpression)
-                    && (((MemberExpression)tempExp).Member.DeclaringType == declaringType)
-                    && (((MemberExpression)tempExp).Member.Name == memberName));
+                    && (((MemberExpression) tempExp).Member.DeclaringType == declaringType)
+                    && (((MemberExpression) tempExp).Member.Name == memberName));
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace LinqToVso
             }
             else if (be.Right.NodeType == ExpressionType.MemberAccess)
             {
-                var me = (MemberExpression)be.Right;
+                var me = (MemberExpression) be.Right;
 
                 if (me.Member.DeclaringType == memberDeclaringType
                     && me.Member.Name == memberName)
@@ -139,13 +139,15 @@ namespace LinqToVso
         {
             if (expression.NodeType == ExpressionType.Constant)
             {
-                return ((ConstantExpression)expression).Value.ToString();
+                return ((ConstantExpression) expression).Value.ToString();
             }
+
             if (expression.NodeType == ExpressionType.Convert
                 || expression.NodeType == ExpressionType.ConvertChecked)
             {
-                return ((int)((expression as UnaryExpression).Operand as ConstantExpression).Value).ToString();
+                return ((int) ((expression as UnaryExpression).Operand as ConstantExpression).Value).ToString();
             }
+
             throw new InvalidQueryException(
                 String.Format("The expression type {0} is not supported to obtain a value.",
                     expression.NodeType));

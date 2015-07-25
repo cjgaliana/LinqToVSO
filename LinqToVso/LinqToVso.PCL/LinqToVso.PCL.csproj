@@ -42,6 +42,7 @@
     <Compile Include="Common\ExpressionTreeHelpers.cs" />
     <Compile Include="Common\ExpressionTreeModifier.cs" />
     <Compile Include="Common\ExpressionVisitor.cs" />
+    <Compile Include="Common\IncludeClause.cs" />
     <Compile Include="Common\InvalidQueryException.cs" />
     <Compile Include="Common\IRequestProcessor.cs" />
     <Compile Include="Common\LinqExtensions.cs" />

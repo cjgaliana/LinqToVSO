@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LinqToVso.PCL.Team;
 
 namespace ConsoleSample
 {
@@ -40,7 +39,7 @@ namespace ConsoleSample
                 //var members = await context.TeamMembers
                 //    .Where(x => x.ProjectId == projects.FirstOrDefault().Id && x.TeamId == firstTeam.Id)
                 //    .ToListAsync();
-                
+
                 //PrintProjects(projects);
 
                 var processes = await context.Processes.ToListAsync();

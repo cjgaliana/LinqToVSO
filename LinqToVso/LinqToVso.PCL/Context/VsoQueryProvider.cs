@@ -1,4 +1,5 @@
-﻿using LinqToVso.Common;
+﻿using System.Collections.Generic;
+using LinqToVso.Common;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -58,7 +59,7 @@ namespace LinqToVso.PCL.Context
             Type elementType = TypeSystem.GetElementType(expression.Type);
 
             return GetType().GetTypeInfo()
-                .DeclaredMethods.Where(meth => meth.IsGenericMethod && meth.Name == "Execute").First()
+                .DeclaredMethods.First(meth => meth.IsGenericMethod && meth.Name == "Execute")
                 .Invoke(this, new object[] { expression });
         }
 
@@ -73,7 +74,7 @@ namespace LinqToVso.PCL.Context
         /// <typeparam name="TResult">type of query</typeparam>
         /// <param name="expression">Expression tree</param>
         /// <returns>list of results from query</returns>
-        public TResult Execute<TResult>(Expression expression, string includeParameters = null)
+        public TResult Execute<TResult>(Expression expression, IList<string> includeParameters = null)
         {
             bool isEnumerable =
                 typeof(TResult).Name == "IEnumerable`1" ||
@@ -99,7 +100,7 @@ namespace LinqToVso.PCL.Context
             }
         }
 
-        public async Task<object> ExecuteAsync<TResult>(Expression expression, string includeParameters = null)
+        public async Task<object> ExecuteAsync<TResult>(Expression expression, IList<string> includeParameters = null)
             where TResult : class
         {
             try

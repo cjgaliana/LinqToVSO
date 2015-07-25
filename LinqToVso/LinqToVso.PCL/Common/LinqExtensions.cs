@@ -19,7 +19,10 @@ namespace LinqToVso
             where TTo : class
         {
             if (item is TTo)
+            {
                 return item as TTo;
+            }
+
             return defaultValue;
         }
     }

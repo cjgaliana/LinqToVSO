@@ -27,7 +27,9 @@ namespace LinqToVso
         public int CompareTo(object obj)
         {
             if (ReferenceEquals(obj, null))
+            {
                 return ReferenceEquals(this, null) ? 0 : 1;
+            }
 
             var other = obj as QueryParameter;
             return CompareTo(other);

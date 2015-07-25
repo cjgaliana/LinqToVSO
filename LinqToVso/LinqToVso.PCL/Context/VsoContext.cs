@@ -148,15 +148,16 @@ namespace LinqToVso
 
         /*******************************************************************************************************/
 
-        private string _includeParameters;
+        private IList<string> _includeParameters;
 
         /// <summary>
         ///     Called by QueryProvider to execute queries
         /// </summary>
         /// <param name="expression">ExpressionTree to parse</param>
         /// <param name="isEnumerable">Indicates whether expression is enumerable</param>
+        /// <param name="includeParameters"></param>
         /// <returns>list of objects with query results</returns>
-        public virtual async Task<object> ExecuteAsync<T>(Expression expression, bool isEnumerable, string includeParameters = null)
+        public virtual async Task<object> ExecuteAsync<T>(Expression expression, bool isEnumerable, IList<string> includeParameters = null)
             where T : class
         {
             this._includeParameters = includeParameters;
@@ -312,7 +313,7 @@ namespace LinqToVso
             if (baseUrl != null)
             {
                 req.BaseUrl = baseUrl;
-                req.ExtraParameters = _includeParameters;
+                req.IncludeParameters = _includeParameters;
             }
 
             return req;

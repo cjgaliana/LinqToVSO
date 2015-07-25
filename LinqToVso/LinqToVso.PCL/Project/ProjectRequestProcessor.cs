@@ -22,7 +22,7 @@ namespace LinqToVso
         /// </summary>
         public virtual string BaseUrl { get; set; }
 
-        public string ExtraParameters { get; set; }
+        public IList<string> IncludeParameters { get; set; }
 
         /// <summary>
         /// extracts parameters from lambda
@@ -35,8 +35,6 @@ namespace LinqToVso
                new ParameterFinder<Project>(
                    lambdaExpression.Body,
                    new List<string> {
-                       //"account",   //Your Visual Studio Online account.
-                       //"api-version", //Version of the API to use.
                         "State", //Return team projects in a specific team project state.
                         TakeClauseFinder.TakeMethodName, //Number of team projects to return.
                         SkipClauseFinder.SkipMethodName, //Number of team projects to skip
@@ -58,6 +56,11 @@ namespace LinqToVso
                 return this.GetTeamProjectDetailsUrl(expressionParameters);
             }
 
+            return this.GetTeamProjectsUrl(expressionParameters);
+        }
+
+        private Request GetTeamProjectsUrl(Dictionary<string, string> expressionParameters)
+        {
             // Gerenic call
             var req = new Request(this.BaseUrl + "/_apis/projects");
             var urlParams = req.RequestParameters;
@@ -89,7 +92,11 @@ namespace LinqToVso
             var url = string.Format("{0}{1}{2}", this.BaseUrl, "/_apis/projects/", id);
             var req = new Request(url);
             var urlParams = req.RequestParameters;
-            urlParams.Add(new QueryParameter("includeCapabilites", "true"));
+
+            if (this.IncludeParameters != null && this.IncludeParameters.Contains("Capabilities"))
+            {
+                urlParams.Add(new QueryParameter("includeCapabilites", "true"));
+            }
 
             urlParams.Add(new QueryParameter("api-version", "1.0"));
             return req;

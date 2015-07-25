@@ -12,9 +12,9 @@ namespace LinqToVso
         {
             var vsoQuery = query as VsoQueryable<T>;
             var provider = query.Provider as VsoQueryProvider;
-            var extraparameters = vsoQuery.IncludeParameter;
+            var includeParameters = vsoQuery.IncludeParameters;
 
-            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<IEnumerable<T>>(query.Expression, extraparameters).ConfigureAwait(false);
+            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<IEnumerable<T>>(query.Expression, includeParameters).ConfigureAwait(false);
 
             return results.ToList();
         }
@@ -22,32 +22,23 @@ namespace LinqToVso
         public static async Task<T> FirstOrDefaultAsync<T>(this IQueryable<T> query)
             where T : class
         {
+            var vsoQuery = query as VsoQueryable<T>;
             var provider = query.Provider as VsoQueryProvider;
+            var includeParameters = vsoQuery.IncludeParameters;
 
-            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression).ConfigureAwait(false);
+            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression, includeParameters).ConfigureAwait(false);
 
             return results.FirstOrDefault();
-        }
-
-
-        public static IQueryable<T> Include<T>(this IQueryable<T> query, string parameterName)
-        {
-            var vsoQuery = query as VsoQueryable<T>;
-            if (vsoQuery == null)
-            {
-                return query;
-            }
-
-            vsoQuery.IncludeQueryParameter(parameterName);
-            return vsoQuery;
         }
 
         public static async Task<T> FirstAsync<T>(this IQueryable<T> query)
             where T : class
         {
+            var vsoQuery = query as VsoQueryable<T>;
             var provider = query.Provider as VsoQueryProvider;
+            var includeParameters = vsoQuery.IncludeParameters;
 
-            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression).ConfigureAwait(false);
+            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression, includeParameters).ConfigureAwait(false);
 
             return results.First();
         }
@@ -55,9 +46,11 @@ namespace LinqToVso
         public static async Task<T> SingleOrDefaultAsync<T>(this IQueryable<T> query)
             where T : class
         {
+            var vsoQuery = query as VsoQueryable<T>;
             var provider = query.Provider as VsoQueryProvider;
+            var includeParameters = vsoQuery.IncludeParameters;
 
-            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression).ConfigureAwait(false);
+            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression, includeParameters).ConfigureAwait(false);
 
             return results.SingleOrDefault();
         }
@@ -65,9 +58,11 @@ namespace LinqToVso
         public static async Task<T> SingleAsync<T>(this IQueryable<T> query)
             where T : class
         {
+            var vsoQuery = query as VsoQueryable<T>;
             var provider = query.Provider as VsoQueryProvider;
+            var includeParameters = vsoQuery.IncludeParameters;
 
-            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression).ConfigureAwait(false);
+            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression, includeParameters).ConfigureAwait(false);
 
             return results.Single();
         }

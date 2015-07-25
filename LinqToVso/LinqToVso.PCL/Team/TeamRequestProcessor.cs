@@ -22,7 +22,8 @@ namespace LinqToVso.PCL.Team
         /// </summary>
         public string BaseUrl { get; set; }
 
-        public string ExtraParameters { get; set; }
+        public IList<string> IncludeParameters { get; set; }
+
 
         /// <summary>
         ///     extracts parameters from lambda
