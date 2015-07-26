@@ -1,9 +1,12 @@
-﻿using LinqToVso;
+﻿
+using Linqify;
+using LinqToVso;
 using LinqToVso.PCL.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LinqToVso.PCL.Context;
 
 namespace ConsoleSample
 {
@@ -21,14 +24,11 @@ namespace ConsoleSample
         {
             try
             {
-                var authorizer = new BasicAuth()
-                {
-                    User = "",
-                    Password = "",
-                    Account = ""
-                };
+    
+                var handler = new BasicAuthHttpClientHandler("user", "password");
+                var vsoExecutor = new VsoExecute(handler);
+                var context = new VsoContext(vsoExecutor);
 
-                var context = new VsoContext(authorizer);
                 var projects = await context.Projects.Include("Test").ToListAsync();
 
                 //var teams = await context.Teams

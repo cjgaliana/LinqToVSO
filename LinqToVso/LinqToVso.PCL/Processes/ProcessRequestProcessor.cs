@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Linqify;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace LinqToVso.PCL.Processes
         /// </summary>
         public string BaseUrl { get; set; }
 
-        public IList<string> IncludeParameters { get; set; }
+        public IList<CustomApiParameter> CustomParameters { get; set; }
 
 
         /// <summary>

@@ -3,7 +3,7 @@
 // ProjectRequestProcessor.cs
 // 18 / 07 / 2015
 
-using LinqToVso.PCL.Common;
+using Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -22,7 +22,7 @@ namespace LinqToVso
         /// </summary>
         public virtual string BaseUrl { get; set; }
 
-        public IList<string> IncludeParameters { get; set; }
+        public IList<CustomApiParameter> CustomParameters { get; set; }
 
         /// <summary>
         /// extracts parameters from lambda
@@ -93,7 +93,7 @@ namespace LinqToVso
             var req = new Request(url);
             var urlParams = req.RequestParameters;
 
-            if (this.IncludeParameters != null && this.IncludeParameters.Contains("Capabilities"))
+            if (this.CustomParameters != null && this.CustomParameters.Any(x=>x.Key == "Capabilities"))
             {
                 urlParams.Add(new QueryParameter("includeCapabilites", "true"));
             }

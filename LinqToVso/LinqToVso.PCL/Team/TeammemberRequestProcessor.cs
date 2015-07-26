@@ -1,4 +1,4 @@
-﻿using LinqToVso.PCL.Common;
+﻿using Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -18,8 +18,7 @@ namespace LinqToVso.PCL.Team
         /// </summary>
         public string BaseUrl { get; set; }
 
-        public IList<string> IncludeParameters { get; set; }
-
+        public IList<CustomApiParameter> CustomParameters { get; set; }
 
         /// <summary>
         ///     extracts parameters from lambda

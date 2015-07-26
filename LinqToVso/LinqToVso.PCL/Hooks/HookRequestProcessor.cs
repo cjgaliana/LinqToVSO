@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Linqify;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -16,8 +17,7 @@ namespace LinqToVso.PCL.Hooks
         /// </summary>
         public string BaseUrl { get; set; }
 
-        public IList<string> IncludeParameters { get; set; }
-
+        public IList<CustomApiParameter> CustomParameters { get; set; }
 
         /// <summary>
         ///     extracts parameters from lambda
@@ -56,8 +56,10 @@ namespace LinqToVso.PCL.Hooks
             {
                 case HookType.Publisher:
                     return this.BuildPublisherUrl(expressionParameters);
+
                 case HookType.Consumer:
                     return this.BuildConsumerUrl(expressionParameters);
+
                 default:
                     throw new ArgumentOutOfRangeException("type", "Hook Type not valid");
             }
@@ -97,8 +99,10 @@ namespace LinqToVso.PCL.Hooks
             {
                 case HookType.Publisher:
                     return this.ProccessPublisherResult(vsoResponse);
+
                 case HookType.Consumer:
                     return this.ProccessConsumerResult(vsoResponse);
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }

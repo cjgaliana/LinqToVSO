@@ -1,3 +1,4 @@
+using Linqify;
 using LinqToVso;
 using LinqToVso.PCL.Authorization;
 using LinqToVso.PCL.Context;
@@ -17,12 +18,10 @@ namespace WPFSample.ViewModels
         {
             try
             {
-                var context = new VsoContext(new BasicAuth
-                {
-                    User = "user",
-                    Password = "password",
-                    Account = "account"
-                });
+                var handler = new BasicAuthHttpClientHandler("user", "password");
+                var vsoExecutor = new VsoExecute(handler);
+                var context = new VsoContext(vsoExecutor);
+
                 var projects = context.Projects.ToList();
                 var projectsasync = await context.Projects.ToListAsync();
             }
