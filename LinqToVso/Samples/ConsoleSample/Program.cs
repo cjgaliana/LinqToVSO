@@ -1,12 +1,12 @@
-﻿
-using Linqify;
+﻿using Linqify;
 using LinqToVso;
 using LinqToVso.PCL.Authorization;
+using LinqToVso.PCL.Context;
+using LinqToVso.PCL.Hooks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LinqToVso.PCL.Context;
 
 namespace ConsoleSample
 {
@@ -24,7 +24,6 @@ namespace ConsoleSample
         {
             try
             {
-    
                 var handler = new BasicAuthHttpClientHandler("user", "password");
                 var vsoExecutor = new VsoExecute(handler);
                 var context = new VsoContext(vsoExecutor);
@@ -42,11 +41,25 @@ namespace ConsoleSample
 
                 //PrintProjects(projects);
 
-                var processes = await context.Processes.ToListAsync();
-                var processDetails =
-                    await context.Processes.
-                    Where(x => x.Id == processes.FirstOrDefault().Id)
+                //var processes = await context.Processes.ToListAsync();
+                //var processDetails =
+                //    await context.Processes.
+                //    Where(x => x.Id == processes.FirstOrDefault().Id)
+                //    .FirstOrDefaultAsync();
+
+                var consumerHooks = await context.Hooks
+                    .Where(x => x.Type == HookType.Consumer)
+                    .ToListAsync();
+
+                var publisherHooks = await context.Hooks
+                    .Where(x => x.Type == HookType.Publisher)
+                    .ToListAsync();
+
+                var subscriptions = await context.Subscriptions.ToListAsync();
+                var firstSubscription = await context.Subscriptions
+                    .Where(x => x.Id == subscriptions.FirstOrDefault().Id)
                     .FirstOrDefaultAsync();
+
                 var a = 5;
             }
             catch (Exception ex)

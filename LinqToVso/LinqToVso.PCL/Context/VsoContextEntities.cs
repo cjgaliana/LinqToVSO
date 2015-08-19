@@ -1,6 +1,7 @@
 ﻿using Linqify;
 using LinqToVso.PCL.Hooks;
 using LinqToVso.PCL.Processes;
+using LinqToVso.PCL.Subscriptions;
 using LinqToVso.PCL.Team;
 
 namespace LinqToVso
@@ -44,6 +45,14 @@ namespace LinqToVso
             get
             {
                 return new LinqifyQueryable<Hook>(this);
+            }
+        }
+
+        public LinqifyQueryable<Subscription> Subscriptions
+        {
+            get
+            {
+                return new LinqifyQueryable<Subscription>(this);
             }
         }
     }

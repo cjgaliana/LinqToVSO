@@ -1,6 +1,7 @@
 ﻿using Linqify;
 using LinqToVso.PCL.Hooks;
 using LinqToVso.PCL.Processes;
+using LinqToVso.PCL.Subscriptions;
 using LinqToVso.PCL.Team;
 using System;
 
@@ -26,6 +27,9 @@ namespace LinqToVso.PCL.Factories
 
                 case "Hook":
                     return new HookRequestProcessor<T>();
+
+                case "Subscription":
+                    return new SubscriptionRequestProcessor<T>();
 
                 default:
                     throw new ArgumentException("Type, " + requestType + " isn't a supported LINQ to VSO entity.",
