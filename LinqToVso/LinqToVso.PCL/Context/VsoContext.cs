@@ -1,8 +1,5 @@
-﻿using System;
-using Linqify;
-using LinqToVso.PCL.Hooks;
-using LinqToVso.PCL.Processes;
-using LinqToVso.PCL.Team;
+﻿using Linqify;
+using LinqToVso.PCL.Factories;
 
 namespace LinqToVso
 {
@@ -76,34 +73,7 @@ namespace LinqToVso
 
         protected override IRequestProcessor<T> CreateRequestProcessor<T>(string requestType)
         {
-            IRequestProcessor<T> req;
-
-            switch (requestType)
-            {
-                case "Project":
-                    req = new ProjectRequestProcessor<T>();
-                    break;
-
-                case "Team":
-                    req = new TeamRequestProcessor<T>();
-                    break;
-
-                case "TeamMember":
-                    req = new TeamMemberRequestProcessor<T>();
-                    break;
-
-                case "Process":
-                    req = new ProcessRequestProcessor<T>();
-                    break;
-
-                case "Hook":
-                    req = new HookRequestProcessor<T>();
-                    break;
-
-                default:
-                    throw new ArgumentException("Type, " + requestType + " isn't a supported LINQ to VSO entity.",
-                        "requestType");
-            }
+            IRequestProcessor<T> req = VsoRequestProcessorFactory.Create<T>(requestType);
 
             if (this.BaseUrl != null)
             {
