@@ -19,7 +19,7 @@ Oauth  | TO DO|
  
  Endpoint  | Status | Coments  
  -------------| -------------| -------------
- Projects     | Read only    |  
+ Projects     | Done    |  
  Teams        | Done         |    
  Processes    | Done         | Links property returned by the API is not included
  
@@ -38,7 +38,7 @@ Oauth  | TO DO|
  -------------| -------------| -------------
  Consumers     | In progress       | 
  Publishers     | In progress       | 
- Subscriptions     | To Do        | 
+ Subscriptions     | Done       | 
  
  
   ***Work (Agile)***
