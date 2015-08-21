@@ -36,8 +36,8 @@ Oauth  | TO DO|
   
   Endpoint  | Status | Coments  
  -------------| -------------| -------------
- Consumers     | In progress       | 
- Publishers     | In progress       | 
+ Consumers     | Done       | 
+ Publishers     | Done       | 
  Subscriptions     | Done       | 
  
  
