@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LinqToVso.PCL.Exceptions;
 
 namespace LinqToVso.PCL.Context
 {
@@ -24,9 +25,13 @@ namespace LinqToVso.PCL.Context
         {
             if (handler == null)
             {
-                throw new ArgumentNullException("handler", "Http Client Handler cannot be null");
+                //throw new ArgumentNullException("handler", "Http Client Handler cannot be null");
+                this.HttpClientHandler = new HttpClientHandler(); //Use default HTTP handler
             }
-            this.HttpClientHandler = handler;
+            else
+            {
+                this.HttpClientHandler = handler;                
+            }
         }
 
         /// <summary>
@@ -168,7 +173,7 @@ namespace LinqToVso.PCL.Context
                         pair => pair.Key,
                         pair => pair.Value);
 
-            //await VsoErrorHandler.ThrowIfErrorAsync(msg).ConfigureAwait(false);
+            await VsoErrorHandler.ThrowIfErrorAsync(msg).ConfigureAwait(false);
 
             return await msg.Content.ReadAsStringAsync().ConfigureAwait(false);
         }

@@ -7,7 +7,7 @@ namespace LinqToVso
     {
         #region Header Constants
 
-        private readonly string DefaultUserAgent = "LINQ-To-VSO/3.0";
+        private readonly string DefaultUserAgent = "LINQ-To-VSO/1.0";
 
         #endregion Header Constants
 
