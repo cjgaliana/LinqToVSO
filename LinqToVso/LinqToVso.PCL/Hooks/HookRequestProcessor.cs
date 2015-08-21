@@ -112,10 +112,10 @@ namespace LinqToVso.PCL.Hooks
         {
             JObject json = JObject.Parse(vsoResponse);
 
-            //if (this.IsSingleProjectDetailsResponse(json))
-            //{
-            //    return this.ProccessSinlgeResult(vsoResponse);
-            //}
+            if (this.IsSingleHookDetailsResponse(json))
+            {
+                return this.ProccessSinlgeResult(vsoResponse);
+            }
 
             List<JToken> serverData = json["value"].Children().ToList();
 
@@ -129,16 +129,24 @@ namespace LinqToVso.PCL.Hooks
             }
 
             return resultList.OfType<T>().ToList();
+        }
+
+        private bool IsSingleHookDetailsResponse(JObject json)
+        {
+            JToken token = null;
+            json.TryGetValue("value", out token);
+
+            return token == null;
         }
 
         private List<T> ProccessConsumerResult(string vsoResponse)
         {
             JObject json = JObject.Parse(vsoResponse);
 
-            //if (this.IsSingleProjectDetailsResponse(json))
-            //{
-            //    return this.ProccessSinlgeResult(vsoResponse);
-            //}
+            if (this.IsSingleHookDetailsResponse(json))
+            {
+                return this.ProccessSinlgeResult(vsoResponse);
+            }
 
             List<JToken> serverData = json["value"].Children().ToList();
 
@@ -154,40 +162,10 @@ namespace LinqToVso.PCL.Hooks
             return resultList.OfType<T>().ToList();
         }
 
-        //private Request GetTeamDetailsUrl(Dictionary<string, string> expressionParameters)
-        //{
-        //    string projectId = expressionParameters["ProjectId"];
-        //    string teamId = expressionParameters["Id"];
-
-        //    string url = string.Format("{0}/{1}/{2}/{3}/{4}",
-        //        this.BaseUrl,
-        //        "_apis/projects",
-        //        projectId,
-        //        "teams",
-        //        teamId);
-
-        //    var req = new Request(url);
-        //    IList<QueryParameter> urlParams = req.RequestParameters;
-
-        //    urlParams.Add(new QueryParameter("api-version", "1.0"));
-        //    return req;
-        //}
-
-        //private List<T> ProccessSinlgeResult(string vsoResponse)
-        //{
-        //    var item = JsonConvert.DeserializeObject<Team.Team>(vsoResponse);
-        //    item.ProjectId = this._projectId;
-
-        //    var list = new List<Team.Team> { item };
-        //    return list.OfType<T>().ToList();
-        //}
-
-        //private bool IsSingleProjectDetailsResponse(JObject json)
-        //{
-        //    JToken token = null;
-        //    json.TryGetValue("value", out token);
-
-        //    return token == null;
-        //}
+        private List<T> ProccessSinlgeResult(string vsoResponse)
+        {
+            var item = JsonConvert.DeserializeObject<T>(vsoResponse);
+            return new List<T> { item };
+        }
     }
 }

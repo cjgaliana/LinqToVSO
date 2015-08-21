@@ -69,18 +69,6 @@ namespace ConsoleSample
             }
         }
 
-        private static void PrintProjects(List<Project> projects)
-        {
-            Console.WriteLine("Projects:");
-
-            foreach (var project in projects)
-            {
-                Console.WriteLine(
-                    "ID: {0}\nName: {1}\nDescription: {2}\n\n",
-                    project.Id,
-                    project.Name,
-                    project.Description);
-            }
-        }
+       
     }
 }

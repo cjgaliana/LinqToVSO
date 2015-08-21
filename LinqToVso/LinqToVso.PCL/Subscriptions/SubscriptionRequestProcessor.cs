@@ -53,7 +53,7 @@ namespace LinqToVso.PCL.Subscriptions
         {
             JObject json = JObject.Parse(vsoResponse);
 
-            if (this.IsSingleProjectDetailsResponse(json))
+            if (this.IsSingleSubscriptionDetailsResponse(json))
             {
                 return this.ProccessSinlgeResult(vsoResponse);
             }
@@ -90,7 +90,7 @@ namespace LinqToVso.PCL.Subscriptions
             return new List<T> {item};
         }
 
-        private bool IsSingleProjectDetailsResponse(JObject json)
+        private bool IsSingleSubscriptionDetailsResponse(JObject json)
         {
             JToken token = null;
             json.TryGetValue("value", out token);
