@@ -60,7 +60,15 @@ namespace ConsoleSample
                     .Where(x => x.Id == subscriptions.FirstOrDefault().Id)
                     .FirstOrDefaultAsync();
 
-                var a = 5;
+
+
+                var teamRooms = await context.TeamRooms.ToListAsync();
+                var firstRoom = await context.TeamRooms.
+                    Where(x=>x.Id == teamRooms.FirstOrDefault().Id)
+                    .FirstOrDefaultAsync();
+                var firstRoomMembers = await context.TeamMembers.Where(x => x.TeamRoomId == firstRoom.Id).ToListAsync();
+
+
             }
             catch (Exception ex)
             {

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using LinqToVso.PCL.Team;
+using LinqToVso.PCL.TeamRoom;
+using Newtonsoft.Json;
 using System;
 
 namespace LinqToVso.PCL.Subscriptions
@@ -33,13 +35,13 @@ namespace LinqToVso.PCL.Subscriptions
         public string ActionDescription { get; set; }
 
         [JsonProperty("createdBy")]
-        public Createdby CreatedBy { get; set; }
+        public TeamMember CreatedBy { get; set; }
 
         [JsonProperty("createdDate")]
         public DateTime CreatedDate { get; set; }
 
         [JsonProperty("modifiedBy")]
-        public Modifiedby ModifiedBy { get; set; }
+        public TeamMember ModifiedBy { get; set; }
 
         [JsonProperty("modifiedDate")]
         public DateTime ModifiedDate { get; set; }
@@ -51,17 +53,7 @@ namespace LinqToVso.PCL.Subscriptions
         public Consumerinputs ConsumerInputs { get; set; }
     }
 
-    public class Createdby
-    {
-        [JsonProperty("id")]
-        public string Id { get; set; }
-    }
 
-    public class Modifiedby
-    {
-        [JsonProperty("id")]
-        public string Id { get; set; }
-    }
 
     public class Publisherinputs
     {

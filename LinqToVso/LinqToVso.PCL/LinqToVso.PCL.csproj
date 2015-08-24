@@ -68,6 +68,8 @@
     <Compile Include="Project\Web.cs" />
     <Compile Include="Subscriptions\Subscription.cs" />
     <Compile Include="Subscriptions\SubscriptionRequestProcessor.cs" />
+    <Compile Include="TeamRoom\TeamRoom.cs" />
+    <Compile Include="TeamRoom\TeamRoomRequestProcessor.cs" />
     <Compile Include="Team\Team.cs" />
     <Compile Include="Team\TeamMember.cs" />
     <Compile Include="Team\TeamMemberRequestProcessor.cs" />

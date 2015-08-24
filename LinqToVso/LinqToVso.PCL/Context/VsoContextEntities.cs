@@ -3,6 +3,7 @@ using LinqToVso.PCL.Hooks;
 using LinqToVso.PCL.Processes;
 using LinqToVso.PCL.Subscriptions;
 using LinqToVso.PCL.Team;
+using LinqToVso.PCL.TeamRoom;
 
 namespace LinqToVso
 {
@@ -53,6 +54,14 @@ namespace LinqToVso
             get
             {
                 return new LinqifyQueryable<Subscription>(this);
+            }
+        }
+
+        public LinqifyQueryable<TeamRoom> TeamRooms
+        {
+            get
+            {
+                return new LinqifyQueryable<TeamRoom>(this);
             }
         }
     }
