@@ -53,6 +53,31 @@
     <Compile Include="Hooks\SupportedEvent.cs" />
     <Compile Include="Hooks\SupportedResourceVersion.cs" />
     <Compile Include="Hooks\Validation.cs" />
+    <Compile Include="Linqify\Clauses\SkipClauseFinder.cs" />
+    <Compile Include="Linqify\Clauses\TakeClauseFinder.cs" />
+    <Compile Include="Linqify\Clauses\WhereClauseFinder.cs" />
+    <Compile Include="Linqify\Common\CustomApiParameter.cs" />
+    <Compile Include="Linqify\Common\Evaluator.cs" />
+    <Compile Include="Linqify\Common\ExpressionTreeHelpers.cs" />
+    <Compile Include="Linqify\Common\ExpressionTreeModifier.cs" />
+    <Compile Include="Linqify\Common\ExpressionVisitor.cs" />
+    <Compile Include="Linqify\Common\MethodCallExpressionTypeFinder.cs" />
+    <Compile Include="Linqify\Common\ParameterFinder.cs" />
+    <Compile Include="Linqify\Common\TypeSystem.cs" />
+    <Compile Include="Linqify\Context\ILinqifyExecutor.cs" />
+    <Compile Include="Linqify\Context\LinqifyContext.cs" />
+    <Compile Include="Linqify\Exceptions\InvalidQueryException.cs" />
+    <Compile Include="Linqify\Extensions\AsyncExtensions.cs" />
+    <Compile Include="Linqify\Extensions\CustomClausesExtensions.cs" />
+    <Compile Include="Linqify\Extensions\LinqExtensions.cs" />
+    <Compile Include="Linqify\Queries\LinqifyQueryable.cs" />
+    <Compile Include="Linqify\Queries\LinqifyQueryProvider.cs" />
+    <Compile Include="Linqify\Queries\QueryParameter.cs" />
+    <Compile Include="Linqify\Request\IRequestProcessor.cs" />
+    <Compile Include="Linqify\Request\Request.cs" />
+    <Compile Include="Linqify\Request\RequestProcessorHelper.cs" />
+    <Compile Include="Linqify\Utilities\Url.cs" />
+    <Compile Include="Linqify\Utilities\Utilities.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessRequestProcessor.cs" />
     <Compile Include="Project\Capabilities.cs" />
@@ -99,12 +124,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Linqify\src\Linqify\Linqify.csproj">
-      <Project>{e0112ce7-dcd8-4e35-9451-870d0fa678df}</Project>
-      <Name>Linqify</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

@@ -1,10 +1,10 @@
-﻿using Linqify;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using LinqToVso.Linqify;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LinqToVso.PCL.Team
 {
@@ -17,10 +17,9 @@ namespace LinqToVso.PCL.Team
     public class TeamMemberRequestProcessor<T> : IRequestProcessor<T> where T : class
     {
         private string _projectId;
+        private NemberRequestType _requestInfoType;
         private string _teamId;
         private string _teamRoomId;
-
-        private NemberRequestType _requestInfoType;
 
         /// <summary>
         ///     base url for request
@@ -46,7 +45,7 @@ namespace LinqToVso.PCL.Team
                         "TeamId", // The parent team,
                         "TeamRoomId", // The team room id (in case you are searching for the team room users)
                         TakeClauseFinder.TakeMethodName, //Number of team projects to return.
-                        SkipClauseFinder.SkipMethodName, //Number of team projects to skip
+                        SkipClauseFinder.SkipMethodName //Number of team projects to skip
                     })
                     .Parameters;
         }
@@ -72,16 +71,35 @@ namespace LinqToVso.PCL.Team
             throw new ArgumentException("A TeamRoomId  or ProjectId+TeamID are required to perform this operation");
         }
 
+        public List<T> ProcessResults(string vsoResponse)
+        {
+            switch (this._requestInfoType)
+            {
+                case NemberRequestType.Team:
+                    return this.ParseTeamMemberResults(vsoResponse);
+                    break;
+
+                case NemberRequestType.TeamRoom:
+                    return this.ParseTeamRoomMemberResults(vsoResponse);
+                    break;
+
+                default:
+                    //throw new ArgumentOutOfRangeException("Its not possible parse the Member Info results.");
+                    throw new ArgumentOutOfRangeException("RequestInfoType",
+                        "It's not possible parse the response because the deserializer info is needed");
+            }
+        }
+
         private Request BuildTeamRoomMembersBuild(Dictionary<string, string> expressionParameters)
         {
             this._teamRoomId = expressionParameters["TeamRoomId"];
             this._requestInfoType = NemberRequestType.TeamRoom;
 
-            string url = string.Format("{0}/{1}/{2}/{3}",
-               this.BaseUrl,
-               "_apis/rooms",
-               this._teamRoomId,
-               "users");
+            var url = string.Format("{0}/{1}/{2}/{3}",
+                this.BaseUrl,
+                "_apis/rooms",
+                this._teamRoomId,
+                "users");
 
             var req = new Request(url);
             var urlParams = req.RequestParameters;
@@ -97,7 +115,7 @@ namespace LinqToVso.PCL.Team
 
             this._requestInfoType = NemberRequestType.Team;
 
-            string url = string.Format("{0}/{1}/{2}/{3}/{4}/{5}/",
+            var url = string.Format("{0}/{1}/{2}/{3}/{4}/{5}/",
                 this.BaseUrl,
                 "_apis/projects",
                 this._projectId,
@@ -106,7 +124,7 @@ namespace LinqToVso.PCL.Team
                 "members");
 
             var req = new Request(url);
-            IList<QueryParameter> urlParams = req.RequestParameters;
+            var urlParams = req.RequestParameters;
 
             if (expressionParameters.ContainsKey(TakeClauseFinder.TakeMethodName))
             {
@@ -122,32 +140,14 @@ namespace LinqToVso.PCL.Team
             return req;
         }
 
-        public List<T> ProcessResults(string vsoResponse)
-        {
-            switch (this._requestInfoType)
-            {
-                case NemberRequestType.Team:
-                    return this.ParseTeamMemberResults(vsoResponse);
-                    break;
-
-                case NemberRequestType.TeamRoom:
-                    return this.ParseTeamRoomMemberResults(vsoResponse);
-                    break;
-
-                default:
-                    //throw new ArgumentOutOfRangeException("Its not possible parse the Member Info results.");
-                    throw new ArgumentOutOfRangeException("RequestInfoType", "It's not possible parse the response because the deserializer info is needed");
-            }
-        }
-
         public List<T> ParseTeamMemberResults(string vsoResponse)
         {
-            JObject json = JObject.Parse(vsoResponse);
-            List<JToken> serverData = json["value"].Children().ToList();
+            var json = JObject.Parse(vsoResponse);
+            var serverData = json["value"].Children().ToList();
 
             var resultList = new List<TeamMember>();
 
-            foreach (JToken data in serverData)
+            foreach (var data in serverData)
             {
                 var item = JsonConvert.DeserializeObject<TeamMember>(data.ToString());
                 item.ProjectId = this._projectId;
@@ -175,13 +175,13 @@ namespace LinqToVso.PCL.Team
 
             var resultList = new List<TeamMember>();
 
-            foreach (JToken data in serverData)
+            foreach (var data in serverData)
             {
                 var item = JsonConvert.DeserializeObject<TeamMember>(data.ToString());
 
                 if (!string.IsNullOrWhiteSpace(this._teamRoomId))
                 {
-                    int roomId = 0;
+                    var roomId = 0;
                     int.TryParse(this._teamRoomId, out roomId);
                     item.TeamRoomId = roomId;
                 }
@@ -195,7 +195,7 @@ namespace LinqToVso.PCL.Team
         private List<T> ProccessSinlgeResult(string vsoResponse)
         {
             var item = JsonConvert.DeserializeObject<T>(vsoResponse);
-            return new List<T> { item };
+            return new List<T> {item};
         }
 
         private bool IsSingleProjectDetailsResponse(JObject json)

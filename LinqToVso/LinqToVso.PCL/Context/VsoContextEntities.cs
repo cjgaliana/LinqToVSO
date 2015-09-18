@@ -1,4 +1,4 @@
-﻿using Linqify;
+﻿using LinqToVso.Linqify;
 using LinqToVso.PCL.Hooks;
 using LinqToVso.PCL.Processes;
 using LinqToVso.PCL.Subscriptions;

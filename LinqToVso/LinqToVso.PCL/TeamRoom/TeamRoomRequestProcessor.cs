@@ -1,9 +1,9 @@
-﻿using Linqify;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using LinqToVso.Linqify;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LinqToVso.PCL.TeamRoom
 {
@@ -15,17 +15,17 @@ namespace LinqToVso.PCL.TeamRoom
         public Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
-               new ParameterFinder<TeamRoom>(
-                   lambdaExpression.Body,
-                   new List<string>
+                new ParameterFinder<TeamRoom>(
+                    lambdaExpression.Body,
+                    new List<string>
                     {
-                        "Id", //If this parameter exists, gets the info for the given ID
+                        "Id" //If this parameter exists, gets the info for the given ID
                     })
-                   .Parameters;
+                    .Parameters;
         }
 
         /// <summary>
-        /// builds url based on input parameters
+        ///     builds url based on input parameters
         /// </summary>
         /// <param name="parameters">criteria for url segments and parameters</param>
         /// <param name="expressionParameters"></param>
@@ -38,6 +38,19 @@ namespace LinqToVso.PCL.TeamRoom
             }
 
             return this.GetTeamRoomsUrl(expressionParameters);
+        }
+
+        public List<T> ProcessResults(string vsoResponse)
+        {
+            var json = JObject.Parse(vsoResponse);
+
+            if (this.IsSingleProjectDetailsResponse(json))
+            {
+                return this.ProccessSinlgeResult(vsoResponse);
+            }
+
+            var serverData = json["value"].Children().ToList();
+            return serverData.Select(item => JsonConvert.DeserializeObject<T>(item.ToString())).ToList();
         }
 
         private Request GetTeamRoomsUrl(Dictionary<string, string> expressionParameters)
@@ -62,23 +75,10 @@ namespace LinqToVso.PCL.TeamRoom
             return req;
         }
 
-        public List<T> ProcessResults(string vsoResponse)
-        {
-            var json = JObject.Parse(vsoResponse);
-
-            if (this.IsSingleProjectDetailsResponse(json))
-            {
-                return this.ProccessSinlgeResult(vsoResponse);
-            }
-
-            var serverData = json["value"].Children().ToList();
-            return serverData.Select(item => JsonConvert.DeserializeObject<T>(item.ToString())).ToList();
-        }
-
         private List<T> ProccessSinlgeResult(string vsoResponse)
         {
             var item = JsonConvert.DeserializeObject<T>(vsoResponse);
-            return new List<T> { item };
+            return new List<T> {item};
         }
 
         private bool IsSingleProjectDetailsResponse(JObject json)

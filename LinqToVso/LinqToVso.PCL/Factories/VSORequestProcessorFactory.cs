@@ -1,10 +1,10 @@
-﻿using Linqify;
+﻿using System;
+using LinqToVso.Linqify;
 using LinqToVso.PCL.Hooks;
 using LinqToVso.PCL.Processes;
 using LinqToVso.PCL.Subscriptions;
 using LinqToVso.PCL.Team;
 using LinqToVso.PCL.TeamRoom;
-using System;
 
 namespace LinqToVso.PCL.Factories
 {

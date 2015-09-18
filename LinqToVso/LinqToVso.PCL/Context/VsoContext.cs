@@ -1,4 +1,4 @@
-﻿using Linqify;
+﻿using LinqToVso.Linqify;
 using LinqToVso.PCL.Factories;
 
 namespace LinqToVso

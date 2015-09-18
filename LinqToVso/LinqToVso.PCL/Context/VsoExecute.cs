@@ -1,4 +1,5 @@
-﻿using Linqify;
+﻿using LinqToVso.Linqify;
+using LinqToVso.PCL.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using LinqToVso.PCL.Exceptions;
 
 namespace LinqToVso.PCL.Context
 {
@@ -23,15 +23,7 @@ namespace LinqToVso.PCL.Context
 
         public VsoExecute(HttpClientHandler handler)
         {
-            if (handler == null)
-            {
-                //throw new ArgumentNullException("handler", "Http Client Handler cannot be null");
-                this.HttpClientHandler = new HttpClientHandler(); //Use default HTTP handler
-            }
-            else
-            {
-                this.HttpClientHandler = handler;                
-            }
+            this.HttpClientHandler = handler ?? new HttpClientHandler();
         }
 
         /// <summary>

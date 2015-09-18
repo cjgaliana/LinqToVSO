@@ -1,9 +1,9 @@
-﻿using Linqify;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using LinqToVso.Linqify;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LinqToVso.PCL.Processes
 {
@@ -15,7 +15,6 @@ namespace LinqToVso.PCL.Processes
         public string BaseUrl { get; set; }
 
         public IList<CustomApiParameter> CustomParameters { get; set; }
-
 
         /// <summary>
         ///     extracts parameters from lambda
@@ -29,7 +28,7 @@ namespace LinqToVso.PCL.Processes
                     lambdaExpression.Body,
                     new List<string>
                     {
-                        "Id", //If this parameter exists, gets the info for the given ID
+                        "Id" //If this parameter exists, gets the info for the given ID
                     })
                     .Parameters;
         }
@@ -53,10 +52,26 @@ namespace LinqToVso.PCL.Processes
                 "processes");
 
             var req = new Request(url);
-            IList<QueryParameter> urlParams = req.RequestParameters;
+            var urlParams = req.RequestParameters;
 
             urlParams.Add(new QueryParameter("api-version", "1.0"));
             return req;
+        }
+
+        public List<T> ProcessResults(string vsoResponse)
+        {
+            var json = JObject.Parse(vsoResponse);
+
+            if (this.IsSingleResult(json))
+            {
+                return this.ProcessSingleResult(vsoResponse);
+            }
+
+            var serverData = json["value"].Children().ToList();
+
+            var resultList = serverData.Select(data => JsonConvert.DeserializeObject<Process>(data.ToString())).ToList();
+
+            return resultList.OfType<T>().ToList();
         }
 
         private Request BuildDetailUrl(Dictionary<string, string> expressionParameters)
@@ -69,32 +84,16 @@ namespace LinqToVso.PCL.Processes
                 id);
 
             var req = new Request(url);
-            IList<QueryParameter> urlParams = req.RequestParameters;
+            var urlParams = req.RequestParameters;
 
             urlParams.Add(new QueryParameter("api-version", "1.0"));
             return req;
         }
 
-        public List<T> ProcessResults(string vsoResponse)
-        {
-            JObject json = JObject.Parse(vsoResponse);
-
-            if (this.IsSingleResult(json))
-            {
-                return this.ProcessSingleResult(vsoResponse);
-            }
-
-            List<JToken> serverData = json["value"].Children().ToList();
-
-            var resultList = serverData.Select(data => JsonConvert.DeserializeObject<Process>(data.ToString())).ToList();
-
-            return resultList.OfType<T>().ToList();
-        }
-
         private List<T> ProcessSingleResult(string vsoResponse)
         {
             var item = JsonConvert.DeserializeObject<T>(vsoResponse);
-            return new List<T>() { item };
+            return new List<T> {item};
         }
 
         private bool IsSingleResult(JObject json)

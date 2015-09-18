@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Linqify;
+using LinqToVso.Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -51,24 +51,24 @@ namespace LinqToVso.PCL.Subscriptions
 
         public List<T> ProcessResults(string vsoResponse)
         {
-            JObject json = JObject.Parse(vsoResponse);
+            var json = JObject.Parse(vsoResponse);
 
             if (this.IsSingleSubscriptionDetailsResponse(json))
             {
                 return this.ProccessSinlgeResult(vsoResponse);
             }
 
-            List<JToken> serverData = json["value"].Children().ToList();
+            var serverData = json["value"].Children().ToList();
             return serverData.Select(item => JsonConvert.DeserializeObject<T>(item.ToString())).ToList();
         }
 
         private Request GetSubscriptionDetailsUrl(Dictionary<string, string> expressionParameters)
         {
-            string id = expressionParameters["Id"];
+            var id = expressionParameters["Id"];
 
-            string url = string.Format("{0}{1}{2}", this.BaseUrl, "/_apis/hooks/subscriptions/", id);
+            var url = string.Format("{0}{1}{2}", this.BaseUrl, "/_apis/hooks/subscriptions/", id);
             var req = new Request(url);
-            IList<QueryParameter> urlParams = req.RequestParameters;
+            var urlParams = req.RequestParameters;
 
             urlParams.Add(new QueryParameter("api-version", "1.0"));
             return req;
@@ -78,7 +78,7 @@ namespace LinqToVso.PCL.Subscriptions
         {
             // Gerenic call
             var req = new Request(this.BaseUrl + "/_apis/hooks/subscriptions/");
-            IList<QueryParameter> urlParams = req.RequestParameters;
+            var urlParams = req.RequestParameters;
 
             urlParams.Add(new QueryParameter("api-version", "1.0"));
             return req;

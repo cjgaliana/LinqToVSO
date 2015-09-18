@@ -1,12 +1,11 @@
-﻿using Linqify;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using LinqToVso;
+using LinqToVso.Linqify;
 using LinqToVso.PCL.Authorization;
 using LinqToVso.PCL.Context;
 using LinqToVso.PCL.Hooks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ConsoleSample
 {
@@ -61,14 +60,11 @@ namespace ConsoleSample
                     .FirstOrDefaultAsync();
 
 
-
                 var teamRooms = await context.TeamRooms.ToListAsync();
                 var firstRoom = await context.TeamRooms.
-                    Where(x=>x.Id == teamRooms.FirstOrDefault().Id)
+                    Where(x => x.Id == teamRooms.FirstOrDefault().Id)
                     .FirstOrDefaultAsync();
                 var firstRoomMembers = await context.TeamMembers.Where(x => x.TeamRoomId == firstRoom.Id).ToListAsync();
-
-
             }
             catch (Exception ex)
             {
@@ -76,7 +72,5 @@ namespace ConsoleSample
                 throw;
             }
         }
-
-       
     }
 }

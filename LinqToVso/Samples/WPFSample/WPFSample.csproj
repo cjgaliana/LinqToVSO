@@ -138,10 +138,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Linqify\src\Linqify\Linqify.csproj">
-      <Project>{E0112CE7-DCD8-4E35-9451-870D0FA678DF}</Project>
-      <Name>Linqify</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\LinqToVso.PCL\LinqToVso.PCL.csproj">
       <Project>{09EAA009-458F-44D2-8D90-98EA437CDB9A}</Project>
       <Name>LinqToVso.PCL</Name>

@@ -60,10 +60,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Linqify\src\Linqify\Linqify.csproj">
-      <Project>{e0112ce7-dcd8-4e35-9451-870d0fa678df}</Project>
-      <Name>Linqify</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\LinqToVso.PCL\LinqToVso.PCL.csproj">
       <Project>{09eaa009-458f-44d2-8d90-98ea437cdb9a}</Project>
       <Name>LinqToVso.PCL</Name>
