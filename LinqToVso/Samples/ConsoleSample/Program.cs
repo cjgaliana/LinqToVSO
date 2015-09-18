@@ -1,9 +1,11 @@
-﻿using LinqToVso;
-using LinqToVso.PCL.Authorization;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LinqToVso;
+using LinqToVso.Linqify;
+using LinqToVso.PCL.Authorization;
+using LinqToVso.PCL.Context;
+using LinqToVso.PCL.Hooks;
 
 namespace ConsoleSample
 {
@@ -21,14 +23,10 @@ namespace ConsoleSample
         {
             try
             {
-                var authorizer = new BasicAuth()
-                {
-                    User = "",
-                    Password = "",
-                    Account = ""
-                };
+                var handler = new BasicAuthHttpClientHandler("user", "password");
+                var vsoExecutor = new VsoExecute(handler);
+                var context = new VsoContext(vsoExecutor);
 
-                var context = new VsoContext(authorizer);
                 var projects = await context.Projects.Include("Test").ToListAsync();
 
                 //var teams = await context.Teams
@@ -42,31 +40,36 @@ namespace ConsoleSample
 
                 //PrintProjects(projects);
 
-                var processes = await context.Processes.ToListAsync();
-                var processDetails =
-                    await context.Processes.
-                    Where(x => x.Id == processes.FirstOrDefault().Id)
+                //var processes = await context.Processes.ToListAsync();
+                //var processDetails =
+                //    await context.Processes.
+                //    Where(x => x.Id == processes.FirstOrDefault().Id)
+                //    .FirstOrDefaultAsync();
+
+                var consumerHooks = await context.Hooks
+                    .Where(x => x.Type == HookType.Consumer)
+                    .ToListAsync();
+
+                var publisherHooks = await context.Hooks
+                    .Where(x => x.Type == HookType.Publisher)
+                    .ToListAsync();
+
+                var subscriptions = await context.Subscriptions.ToListAsync();
+                var firstSubscription = await context.Subscriptions
+                    .Where(x => x.Id == subscriptions.FirstOrDefault().Id)
                     .FirstOrDefaultAsync();
-                var a = 5;
+
+
+                var teamRooms = await context.TeamRooms.ToListAsync();
+                var firstRoom = await context.TeamRooms.
+                    Where(x => x.Id == teamRooms.FirstOrDefault().Id)
+                    .FirstOrDefaultAsync();
+                var firstRoomMembers = await context.TeamMembers.Where(x => x.TeamRoomId == firstRoom.Id).ToListAsync();
             }
             catch (Exception ex)
             {
                 var message = ex.Message;
                 throw;
-            }
-        }
-
-        private static void PrintProjects(List<Project> projects)
-        {
-            Console.WriteLine("Projects:");
-
-            foreach (var project in projects)
-            {
-                Console.WriteLine(
-                    "ID: {0}\nName: {1}\nDescription: {2}\n\n",
-                    project.Id,
-                    project.Name,
-                    project.Description);
             }
         }
     }

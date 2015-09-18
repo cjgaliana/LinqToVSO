@@ -3,13 +3,13 @@
 // TeamRequestProcessor.cs
 // 19 / 07 / 2015
 
-using LinqToVso.PCL.Common;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using LinqToVso.Linqify;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LinqToVso.PCL.Team
 {
@@ -22,8 +22,7 @@ namespace LinqToVso.PCL.Team
         /// </summary>
         public string BaseUrl { get; set; }
 
-        public IList<string> IncludeParameters { get; set; }
-
+        public IList<CustomApiParameter> CustomParameters { get; set; }
 
         /// <summary>
         ///     extracts parameters from lambda
@@ -42,7 +41,7 @@ namespace LinqToVso.PCL.Team
                         TakeClauseFinder.TakeMethodName, //Number of team projects to return.
                         SkipClauseFinder.SkipMethodName, //Number of team projects to skip
                         "Id", //If this parameter exists, gets the info for the given ID
-                        "ProjectId", //The parent project
+                        "ProjectId" //The parent project
                     })
                     .Parameters;
         }
@@ -67,13 +66,13 @@ namespace LinqToVso.PCL.Team
 
             this._projectId = expressionParameters["ProjectId"];
 
-            string url = string.Format("{0}/{1}/{2}/{3}",
+            var url = string.Format("{0}/{1}/{2}/{3}",
                 this.BaseUrl,
                 "_apis/projects",
                 this._projectId,
                 "teams");
             var req = new Request(url);
-            IList<QueryParameter> urlParams = req.RequestParameters;
+            var urlParams = req.RequestParameters;
 
             if (expressionParameters.ContainsKey(TakeClauseFinder.TakeMethodName))
             {
@@ -91,18 +90,18 @@ namespace LinqToVso.PCL.Team
 
         public List<T> ProcessResults(string vsoResponse)
         {
-            JObject json = JObject.Parse(vsoResponse);
+            var json = JObject.Parse(vsoResponse);
 
             if (this.IsSingleProjectDetailsResponse(json))
             {
                 return this.ProccessSinlgeResult(vsoResponse);
             }
 
-            List<JToken> serverData = json["value"].Children().ToList();
+            var serverData = json["value"].Children().ToList();
 
             var resultList = new List<Team>();
 
-            foreach (JToken data in serverData)
+            foreach (var data in serverData)
             {
                 var item = JsonConvert.DeserializeObject<Team>(data.ToString());
                 item.ProjectId = this._projectId;
@@ -114,10 +113,10 @@ namespace LinqToVso.PCL.Team
 
         private Request GetTeamDetailsUrl(Dictionary<string, string> expressionParameters)
         {
-            string projectId = expressionParameters["ProjectId"];
-            string teamId = expressionParameters["Id"];
+            var projectId = expressionParameters["ProjectId"];
+            var teamId = expressionParameters["Id"];
 
-            string url = string.Format("{0}/{1}/{2}/{3}/{4}",
+            var url = string.Format("{0}/{1}/{2}/{3}/{4}",
                 this.BaseUrl,
                 "_apis/projects",
                 projectId,
@@ -125,7 +124,7 @@ namespace LinqToVso.PCL.Team
                 teamId);
 
             var req = new Request(url);
-            IList<QueryParameter> urlParams = req.RequestParameters;
+            var urlParams = req.RequestParameters;
 
             urlParams.Add(new QueryParameter("api-version", "1.0"));
             return req;
@@ -136,7 +135,7 @@ namespace LinqToVso.PCL.Team
             var item = JsonConvert.DeserializeObject<Team>(vsoResponse);
             item.ProjectId = this._projectId;
 
-            var list = new List<Team> { item };
+            var list = new List<Team> {item};
             return list.OfType<T>().ToList();
         }
 

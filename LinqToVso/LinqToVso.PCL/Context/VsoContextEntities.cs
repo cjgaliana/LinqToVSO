@@ -1,49 +1,67 @@
-﻿using LinqToVso.PCL.Context;
+﻿using LinqToVso.Linqify;
 using LinqToVso.PCL.Hooks;
 using LinqToVso.PCL.Processes;
+using LinqToVso.PCL.Subscriptions;
 using LinqToVso.PCL.Team;
+using LinqToVso.PCL.TeamRoom;
 
 namespace LinqToVso
 {
     public partial class VsoContext
     {
-        public VsoQueryable<Project> Projects
+        public LinqifyQueryable<Project> Projects
         {
             get
             {
-                return new VsoQueryable<Project>(this);
+                return new LinqifyQueryable<Project>(this);
             }
         }
 
-        public VsoQueryable<Team> Teams
+        public LinqifyQueryable<Team> Teams
         {
             get
             {
-                return new VsoQueryable<Team>(this);
+                return new LinqifyQueryable<Team>(this);
             }
         }
 
-        public VsoQueryable<TeamMember> TeamMembers
+        public LinqifyQueryable<TeamMember> TeamMembers
         {
             get
             {
-                return new VsoQueryable<TeamMember>(this);
+                return new LinqifyQueryable<TeamMember>(this);
             }
         }
 
-        public VsoQueryable<Process> Processes
+        public LinqifyQueryable<Process> Processes
         {
             get
             {
-                return new VsoQueryable<Process>(this);
+                return new LinqifyQueryable<Process>(this);
             }
         }
 
-        public VsoQueryable<Hook> Hooks
+        public LinqifyQueryable<Hook> Hooks
         {
             get
             {
-                return new VsoQueryable<Hook>(this);
+                return new LinqifyQueryable<Hook>(this);
+            }
+        }
+
+        public LinqifyQueryable<Subscription> Subscriptions
+        {
+            get
+            {
+                return new LinqifyQueryable<Subscription>(this);
+            }
+        }
+
+        public LinqifyQueryable<TeamRoom> TeamRooms
+        {
+            get
+            {
+                return new LinqifyQueryable<TeamRoom>(this);
             }
         }
     }

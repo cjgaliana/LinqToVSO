@@ -1,6 +1,5 @@
-﻿using System.Net.Http.Headers;
-using LinqToVso.PCL.Authorization;
-using LinqToVso.PCL.Net;
+﻿using LinqToVso.Linqify;
+using LinqToVso.PCL.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,21 +10,20 @@ using System.Threading.Tasks;
 
 namespace LinqToVso.PCL.Context
 {
-    public class VsoExecute : IVsoExecute, IDisposable
+    public class VsoExecute : ILinqifyExecutor
     {
         internal const string DefaultUserAgent = "Linq-To-VSO/0.1";
         internal const int DefaultReadWriteTimeout = 300000;
         internal const int DefaultTimeout = 100000;
-        private readonly IAuthorizer _authorizer;
 
-        public VsoExecute(IAuthorizer authorizer)
+        public VsoExecute()
+            : this(new HttpClientHandler())
         {
-            if (authorizer == null)
-            {
-                throw new ArgumentNullException("authorizer", "Authorizer cannot be null");
-            }
+        }
 
-            this._authorizer = authorizer;
+        public VsoExecute(HttpClientHandler handler)
+        {
+            this.HttpClientHandler = handler ?? new HttpClientHandler();
         }
 
         /// <summary>
@@ -37,10 +35,7 @@ namespace LinqToVso.PCL.Context
             GC.SuppressFinalize(this);
         }
 
-        public IAuthorizer Authorizer
-        {
-            get { return this._authorizer; }
-        }
+        public HttpClientHandler HttpClientHandler { get; private set; }
 
         /// <summary>
         ///     Allows callers to cancel operation (where applicable)
@@ -85,15 +80,9 @@ namespace LinqToVso.PCL.Context
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
-            //if (disposing)
-            //{
-            //    StreamingCallbackAsync = null;
-
-            //    if (Log != null)
-            //    {
-            //        Log.Dispose();
-            //    }
-            //}
+            if (disposing)
+            {
+            }
         }
 
         /// <summary>
@@ -102,7 +91,7 @@ namespace LinqToVso.PCL.Context
         /// <param name="request">Request with url endpoint and all query parameters</param>
         /// <param name="reqProc">Request Processor for Async Results</param>
         /// <returns>XML Respose from VSO</returns>
-        public async Task<string> QueryVsoAsync<T>(Request request, IRequestProcessor<T> reqProc)
+        public async Task<string> QueryApiAsync<T>(Request request, IRequestProcessor<T> reqProc)
         {
             try
             {
@@ -113,23 +102,15 @@ namespace LinqToVso.PCL.Context
                         key => key.Name,
                         val => val.Value);
 
-                //var handler = new GetMessageHandler(this, parms, request.FullUrl);
-                var handler = new HttpClientHandler { AllowAutoRedirect = true };
-
-                //using (var client = new HttpClient(handler))
-                using (var client = new HttpClient(handler))
+                using (var client = new HttpClient(this.HttpClientHandler))
                 {
                     if (this.Timeout != 0)
                     {
                         client.Timeout = TimeSpan.FromSeconds(this.Timeout);
                     }
+                    HttpResponseMessage msg = await client.SendAsync(req, this.CancellationToken).ConfigureAwait(false);
 
-                    client.DefaultRequestHeaders.Authorization = this.Authorizer.GetAuthorizationHeaderValue();
-                    //HttpResponseMessage msg = await client.SendAsync(req, this.CancellationToken).ConfigureAwait(false);
-
-                    //return await this.HandleResponseAsync(msg).ConfigureAwait(false);
-                    var msg = await client.GetStringAsync(request.FullUrl).ConfigureAwait(false);
-                    return msg;
+                    return await this.HandleResponseAsync(msg).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -139,7 +120,7 @@ namespace LinqToVso.PCL.Context
             }
         }
 
-        public async Task<string> PostToVsoAsync<T>(string url, IDictionary<string, string> postData, CancellationToken cancelToken)
+        public async Task<string> PostToApiAsync<T>(string url, IDictionary<string, string> postData, CancellationToken cancelToken)
         {
             var cleanPostData = new Dictionary<string, string>();
 
@@ -155,8 +136,8 @@ namespace LinqToVso.PCL.Context
             }
 
             var content = new StringContent(dataString.ToString().TrimEnd('&'), Encoding.UTF8, "application/x-www-form-urlencoded");
-            var handler = new PostMessageHandler(this, cleanPostData, url);
-            using (var client = new HttpClient(handler))
+
+            using (var client = new HttpClient(this.HttpClientHandler))
             {
                 if (Timeout != 0)
                 {
@@ -184,7 +165,7 @@ namespace LinqToVso.PCL.Context
                         pair => pair.Key,
                         pair => pair.Value);
 
-            //await TwitterErrorHandler.ThrowIfErrorAsync(msg).ConfigureAwait(false);
+            await VsoErrorHandler.ThrowIfErrorAsync(msg).ConfigureAwait(false);
 
             return await msg.Content.ReadAsStringAsync().ConfigureAwait(false);
         }

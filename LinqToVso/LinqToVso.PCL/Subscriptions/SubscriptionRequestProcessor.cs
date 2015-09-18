@@ -5,14 +5,14 @@ using LinqToVso.Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LinqToVso.PCL.Processes
+namespace LinqToVso.PCL.Subscriptions
 {
-    public class ProcessRequestProcessor<T> : IRequestProcessor<T> where T : class
+    public class SubscriptionRequestProcessor<T> : IRequestProcessor<T> where T : class
     {
         /// <summary>
         ///     base url for request
         /// </summary>
-        public string BaseUrl { get; set; }
+        public virtual string BaseUrl { get; set; }
 
         public IList<CustomApiParameter> CustomParameters { get; set; }
 
@@ -24,7 +24,7 @@ namespace LinqToVso.PCL.Processes
         public virtual Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
-                new ParameterFinder<Process>(
+                new ParameterFinder<Subscription>(
                     lambdaExpression.Body,
                     new List<string>
                     {
@@ -43,46 +43,30 @@ namespace LinqToVso.PCL.Processes
         {
             if (expressionParameters.ContainsKey("Id"))
             {
-                return this.BuildDetailUrl(expressionParameters);
+                return this.GetSubscriptionDetailsUrl(expressionParameters);
             }
 
-            var url = string.Format("{0}/{1}/{2}",
-                this.BaseUrl,
-                "_apis/process",
-                "processes");
-
-            var req = new Request(url);
-            var urlParams = req.RequestParameters;
-
-            urlParams.Add(new QueryParameter("api-version", "1.0"));
-            return req;
+            return this.GetSubscriptionsUrl(expressionParameters);
         }
 
         public List<T> ProcessResults(string vsoResponse)
         {
             var json = JObject.Parse(vsoResponse);
 
-            if (this.IsSingleResult(json))
+            if (this.IsSingleSubscriptionDetailsResponse(json))
             {
-                return this.ProcessSingleResult(vsoResponse);
+                return this.ProccessSinlgeResult(vsoResponse);
             }
 
             var serverData = json["value"].Children().ToList();
-
-            var resultList = serverData.Select(data => JsonConvert.DeserializeObject<Process>(data.ToString())).ToList();
-
-            return resultList.OfType<T>().ToList();
+            return serverData.Select(item => JsonConvert.DeserializeObject<T>(item.ToString())).ToList();
         }
 
-        private Request BuildDetailUrl(Dictionary<string, string> expressionParameters)
+        private Request GetSubscriptionDetailsUrl(Dictionary<string, string> expressionParameters)
         {
             var id = expressionParameters["Id"];
-            var url = string.Format("{0}/{1}/{2}/{3}",
-                this.BaseUrl,
-                "_apis/process",
-                "processes",
-                id);
 
+            var url = string.Format("{0}{1}{2}", this.BaseUrl, "/_apis/hooks/subscriptions/", id);
             var req = new Request(url);
             var urlParams = req.RequestParameters;
 
@@ -90,13 +74,23 @@ namespace LinqToVso.PCL.Processes
             return req;
         }
 
-        private List<T> ProcessSingleResult(string vsoResponse)
+        private Request GetSubscriptionsUrl(Dictionary<string, string> expressionParameters)
+        {
+            // Gerenic call
+            var req = new Request(this.BaseUrl + "/_apis/hooks/subscriptions/");
+            var urlParams = req.RequestParameters;
+
+            urlParams.Add(new QueryParameter("api-version", "1.0"));
+            return req;
+        }
+
+        private List<T> ProccessSinlgeResult(string vsoResponse)
         {
             var item = JsonConvert.DeserializeObject<T>(vsoResponse);
             return new List<T> {item};
         }
 
-        private bool IsSingleResult(JObject json)
+        private bool IsSingleSubscriptionDetailsResponse(JObject json)
         {
             JToken token = null;
             json.TryGetValue("value", out token);

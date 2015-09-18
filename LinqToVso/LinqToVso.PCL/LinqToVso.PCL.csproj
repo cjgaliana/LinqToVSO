@@ -15,6 +15,7 @@
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <NuGetPackageImportStamp>c916ea40</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,27 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Async\AsyncSupport.cs" />
     <Compile Include="Authorization\BasicAuth.cs" />
     <Compile Include="Authorization\BasicAuthHttpClientHandler.cs" />
     <Compile Include="Authorization\IAuthorizer.cs" />
-    <Compile Include="Common\Evaluator.cs" />
-    <Compile Include="Common\ExpressionTreeHelpers.cs" />
-    <Compile Include="Common\ExpressionTreeModifier.cs" />
-    <Compile Include="Common\ExpressionVisitor.cs" />
-    <Compile Include="Common\IncludeClause.cs" />
-    <Compile Include="Common\InvalidQueryException.cs" />
-    <Compile Include="Common\IRequestProcessor.cs" />
-    <Compile Include="Common\LinqExtensions.cs" />
-    <Compile Include="Common\MethodCallExpressionTypeFinder.cs" />
-    <Compile Include="Common\ParameterFinder.cs" />
-    <Compile Include="Common\Request.cs" />
-    <Compile Include="Common\RequestProcessorHelper.cs" />
-    <Compile Include="Common\SkipClauseFinder.cs" />
-    <Compile Include="Common\TakeClauseFinder.cs" />
-    <Compile Include="Common\WhereClauseFinder.cs" />
-    <Compile Include="Context\IVsoExecute.cs" />
     <Compile Include="Context\VsoExecute.cs" />
+    <Compile Include="Exceptions\LinqToVsoQueryException.cs" />
+    <Compile Include="Exceptions\VsoErrorDetails.cs" />
+    <Compile Include="Exceptions\VsoErrorHandler.cs" />
+    <Compile Include="Factories\VsoRequestProcessorFactory.cs" />
     <Compile Include="Hooks\Hook.cs" />
     <Compile Include="Hooks\HookAction.cs" />
     <Compile Include="Hooks\HookRequestProcessor.cs" />
@@ -65,8 +53,31 @@
     <Compile Include="Hooks\SupportedEvent.cs" />
     <Compile Include="Hooks\SupportedResourceVersion.cs" />
     <Compile Include="Hooks\Validation.cs" />
-    <Compile Include="Net\GetMessageHandler.cs" />
-    <Compile Include="Net\PostMessageHandler.cs" />
+    <Compile Include="Linqify\Clauses\SkipClauseFinder.cs" />
+    <Compile Include="Linqify\Clauses\TakeClauseFinder.cs" />
+    <Compile Include="Linqify\Clauses\WhereClauseFinder.cs" />
+    <Compile Include="Linqify\Common\CustomApiParameter.cs" />
+    <Compile Include="Linqify\Common\Evaluator.cs" />
+    <Compile Include="Linqify\Common\ExpressionTreeHelpers.cs" />
+    <Compile Include="Linqify\Common\ExpressionTreeModifier.cs" />
+    <Compile Include="Linqify\Common\ExpressionVisitor.cs" />
+    <Compile Include="Linqify\Common\MethodCallExpressionTypeFinder.cs" />
+    <Compile Include="Linqify\Common\ParameterFinder.cs" />
+    <Compile Include="Linqify\Common\TypeSystem.cs" />
+    <Compile Include="Linqify\Context\ILinqifyExecutor.cs" />
+    <Compile Include="Linqify\Context\LinqifyContext.cs" />
+    <Compile Include="Linqify\Exceptions\InvalidQueryException.cs" />
+    <Compile Include="Linqify\Extensions\AsyncExtensions.cs" />
+    <Compile Include="Linqify\Extensions\CustomClausesExtensions.cs" />
+    <Compile Include="Linqify\Extensions\LinqExtensions.cs" />
+    <Compile Include="Linqify\Queries\LinqifyQueryable.cs" />
+    <Compile Include="Linqify\Queries\LinqifyQueryProvider.cs" />
+    <Compile Include="Linqify\Queries\QueryParameter.cs" />
+    <Compile Include="Linqify\Request\IRequestProcessor.cs" />
+    <Compile Include="Linqify\Request\Request.cs" />
+    <Compile Include="Linqify\Request\RequestProcessorHelper.cs" />
+    <Compile Include="Linqify\Utilities\Url.cs" />
+    <Compile Include="Linqify\Utilities\Utilities.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessRequestProcessor.cs" />
     <Compile Include="Project\Capabilities.cs" />
@@ -80,18 +91,16 @@
     <Compile Include="Project\Self.cs" />
     <Compile Include="Project\Versioncontrol.cs" />
     <Compile Include="Project\Web.cs" />
-    <Compile Include="Net\Url.cs" />
-    <Compile Include="Common\QueryParameter.cs" />
-    <Compile Include="Common\TypeSystem.cs" />
+    <Compile Include="Subscriptions\Subscription.cs" />
+    <Compile Include="Subscriptions\SubscriptionRequestProcessor.cs" />
+    <Compile Include="TeamRoom\TeamRoom.cs" />
+    <Compile Include="TeamRoom\TeamRoomRequestProcessor.cs" />
     <Compile Include="Team\Team.cs" />
     <Compile Include="Team\TeamMember.cs" />
     <Compile Include="Team\TeamMemberRequestProcessor.cs" />
     <Compile Include="Team\TeamRequestProcessor.cs" />
-    <Compile Include="Utilities\Utilities.cs" />
     <Compile Include="Context\VsoContext.cs" />
     <Compile Include="Context\VsoContextEntities.cs" />
-    <Compile Include="Context\VsoQueryable.cs" />
-    <Compile Include="Context\VsoQueryProvider.cs" />
     <Compile Include="Project\Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -118,10 +127,12 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
-    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

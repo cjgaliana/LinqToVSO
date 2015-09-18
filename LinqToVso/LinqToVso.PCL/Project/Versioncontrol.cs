@@ -7,6 +7,7 @@ namespace LinqToVso
         Git,
         TfVc
     }
+
     public class Versioncontrol
     {
         [JsonProperty("sourceControlType")]

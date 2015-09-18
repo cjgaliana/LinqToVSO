@@ -19,10 +19,16 @@ namespace LinqToVso.PCL.Team
         [JsonProperty("imageUrl")]
         public string ImageUrl { get; set; }
 
+        [JsonProperty("isOnline")]
+        public bool IsOnline { get; set; }
+
         [JsonIgnore]
         public string ProjectId { get; set; }
 
         [JsonIgnore]
         public string TeamId { get; set; }
+
+        [JsonIgnore]
+        public int TeamRoomId { get; set; }
     }
 }

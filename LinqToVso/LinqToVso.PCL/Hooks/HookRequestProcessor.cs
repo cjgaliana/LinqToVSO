@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using LinqToVso.Linqify;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LinqToVso.PCL.Hooks
 {
@@ -16,8 +17,7 @@ namespace LinqToVso.PCL.Hooks
         /// </summary>
         public string BaseUrl { get; set; }
 
-        public IList<string> IncludeParameters { get; set; }
-
+        public IList<CustomApiParameter> CustomParameters { get; set; }
 
         /// <summary>
         ///     extracts parameters from lambda
@@ -31,7 +31,7 @@ namespace LinqToVso.PCL.Hooks
                     lambdaExpression.Body,
                     new List<string>
                     {
-                        "Type", //Consumer/Publisher
+                        "Type" //Consumer/Publisher
                     })
                     .Parameters;
         }
@@ -51,15 +51,32 @@ namespace LinqToVso.PCL.Hooks
 
             var type = expressionParameters["Type"];
 
-            this._hookType = (HookType)Enum.Parse(typeof(HookType), type);
+            this._hookType = (HookType) Enum.Parse(typeof (HookType), type);
             switch (this._hookType)
             {
                 case HookType.Publisher:
                     return this.BuildPublisherUrl(expressionParameters);
+
                 case HookType.Consumer:
                     return this.BuildConsumerUrl(expressionParameters);
+
                 default:
                     throw new ArgumentOutOfRangeException("type", "Hook Type not valid");
+            }
+        }
+
+        public List<T> ProcessResults(string vsoResponse)
+        {
+            switch (this._hookType)
+            {
+                case HookType.Publisher:
+                    return this.ProccessPublisherResult(vsoResponse);
+
+                case HookType.Consumer:
+                    return this.ProccessConsumerResult(vsoResponse);
+
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -71,7 +88,7 @@ namespace LinqToVso.PCL.Hooks
                 "consumers");
 
             var req = new Request(url);
-            IList<QueryParameter> urlParams = req.RequestParameters;
+            var urlParams = req.RequestParameters;
 
             urlParams.Add(new QueryParameter("api-version", "1.0"));
             return req;
@@ -80,44 +97,31 @@ namespace LinqToVso.PCL.Hooks
         private Request BuildPublisherUrl(Dictionary<string, string> expressionParameters)
         {
             var url = string.Format("{0}/{1}/{2}",
-               this.BaseUrl,
-               "_apis/hooks",
-               "publishers");
+                this.BaseUrl,
+                "_apis/hooks",
+                "publishers");
 
             var req = new Request(url);
-            IList<QueryParameter> urlParams = req.RequestParameters;
+            var urlParams = req.RequestParameters;
 
             urlParams.Add(new QueryParameter("api-version", "1.0"));
             return req;
         }
 
-        public List<T> ProcessResults(string vsoResponse)
-        {
-            switch (this._hookType)
-            {
-                case HookType.Publisher:
-                    return this.ProccessPublisherResult(vsoResponse);
-                case HookType.Consumer:
-                    return this.ProccessConsumerResult(vsoResponse);
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
         private List<T> ProccessPublisherResult(string vsoResponse)
         {
-            JObject json = JObject.Parse(vsoResponse);
+            var json = JObject.Parse(vsoResponse);
 
-            //if (this.IsSingleProjectDetailsResponse(json))
-            //{
-            //    return this.ProccessSinlgeResult(vsoResponse);
-            //}
+            if (this.IsSingleHookDetailsResponse(json))
+            {
+                return this.ProccessSinlgeResult(vsoResponse);
+            }
 
-            List<JToken> serverData = json["value"].Children().ToList();
+            var serverData = json["value"].Children().ToList();
 
             var resultList = new List<Hook>();
 
-            foreach (JToken data in serverData)
+            foreach (var data in serverData)
             {
                 var item = JsonConvert.DeserializeObject<Hook>(data.ToString());
                 item.Type = this._hookType;
@@ -125,22 +129,30 @@ namespace LinqToVso.PCL.Hooks
             }
 
             return resultList.OfType<T>().ToList();
+        }
+
+        private bool IsSingleHookDetailsResponse(JObject json)
+        {
+            JToken token = null;
+            json.TryGetValue("value", out token);
+
+            return token == null;
         }
 
         private List<T> ProccessConsumerResult(string vsoResponse)
         {
-            JObject json = JObject.Parse(vsoResponse);
+            var json = JObject.Parse(vsoResponse);
 
-            //if (this.IsSingleProjectDetailsResponse(json))
-            //{
-            //    return this.ProccessSinlgeResult(vsoResponse);
-            //}
+            if (this.IsSingleHookDetailsResponse(json))
+            {
+                return this.ProccessSinlgeResult(vsoResponse);
+            }
 
-            List<JToken> serverData = json["value"].Children().ToList();
+            var serverData = json["value"].Children().ToList();
 
             var resultList = new List<Hook>();
 
-            foreach (JToken data in serverData)
+            foreach (var data in serverData)
             {
                 var item = JsonConvert.DeserializeObject<Hook>(data.ToString());
                 item.Type = this._hookType;
@@ -150,40 +162,10 @@ namespace LinqToVso.PCL.Hooks
             return resultList.OfType<T>().ToList();
         }
 
-        //private Request GetTeamDetailsUrl(Dictionary<string, string> expressionParameters)
-        //{
-        //    string projectId = expressionParameters["ProjectId"];
-        //    string teamId = expressionParameters["Id"];
-
-        //    string url = string.Format("{0}/{1}/{2}/{3}/{4}",
-        //        this.BaseUrl,
-        //        "_apis/projects",
-        //        projectId,
-        //        "teams",
-        //        teamId);
-
-        //    var req = new Request(url);
-        //    IList<QueryParameter> urlParams = req.RequestParameters;
-
-        //    urlParams.Add(new QueryParameter("api-version", "1.0"));
-        //    return req;
-        //}
-
-        //private List<T> ProccessSinlgeResult(string vsoResponse)
-        //{
-        //    var item = JsonConvert.DeserializeObject<Team.Team>(vsoResponse);
-        //    item.ProjectId = this._projectId;
-
-        //    var list = new List<Team.Team> { item };
-        //    return list.OfType<T>().ToList();
-        //}
-
-        //private bool IsSingleProjectDetailsResponse(JObject json)
-        //{
-        //    JToken token = null;
-        //    json.TryGetValue("value", out token);
-
-        //    return token == null;
-        //}
+        private List<T> ProccessSinlgeResult(string vsoResponse)
+        {
+            var item = JsonConvert.DeserializeObject<T>(vsoResponse);
+            return new List<T> {item};
+        }
     }
 }
