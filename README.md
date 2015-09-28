@@ -11,7 +11,7 @@ In development
 Type | Status | Comments
 ------------- | ------------- | -------------
 Basic  | Done| Accounts and Profiles not supported.
-Oauth  | TO DO|
+Oauth  |Done|
 
 **Endpoints**
 
