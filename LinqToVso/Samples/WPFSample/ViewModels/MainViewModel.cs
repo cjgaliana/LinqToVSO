@@ -14,9 +14,7 @@ namespace WPFSample.ViewModels
         {
             try
             {
-                var handler = new BasicAuthHttpClientHandler("user", "password");
-                var vsoExecutor = new VsoExecute(handler);
-                var context = new VsoContext(vsoExecutor);
+                var context = new VsoContext("accoutn", "user", "password");
 
                 var projects = context.Projects.ToList();
                 var projectsasync = await context.Projects.ToListAsync();

@@ -1,22 +1,21 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace LinqToVso.PCL.Authorization
 {
-    public class BasicAuthHttpClientHandler : HttpClientHandler
+    public class OauthHttpClientHandler : HttpClientHandler
     {
-        private readonly string _password;
-        private readonly string _user;
+        private readonly string _token;
 
-        public BasicAuthHttpClientHandler(string user, string password)
+        public OauthHttpClientHandler(string token)
         {
-            this._user = user;
-            this._password = password;
+            this._token = token;
         }
+
+        public string Password { get; set; }
+        public string User { get; set; }
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
@@ -28,9 +27,7 @@ namespace LinqToVso.PCL.Authorization
 
         private AuthenticationHeaderValue GetAuthorizationHeaderValue()
         {
-            return new AuthenticationHeaderValue("Basic",
-                Convert.ToBase64String(
-                    Encoding.UTF8.GetBytes(string.Format("{0}:{1}", this._user, this._password))));
+            return new AuthenticationHeaderValue("Bearer", this._token);
         }
     }
 }

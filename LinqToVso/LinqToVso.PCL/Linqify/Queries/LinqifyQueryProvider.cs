@@ -10,25 +10,24 @@ namespace LinqToVso.Linqify
     public class LinqifyQueryProvider : IQueryProvider
     {
         /// <summary>
-        /// refers to LinqifyContext that calling code instantiated
+        ///     refers to LinqifyContext that calling code instantiated
         /// </summary>
         public LinqifyContext Context { get; set; }
 
         /// <summary>
-        /// Non-generic version, returns current query to
-        /// calling code as its constructing the query
+        ///     Non-generic version, returns current query to
+        ///     calling code as its constructing the query
         /// </summary>
         /// <param name="expression">Expression tree</param>
         /// <returns>IQueryable that can be executed</returns>
         public IQueryable CreateQuery(Expression expression)
         {
-            Type elementType = TypeSystem.GetElementType(expression.Type);
+            var elementType = TypeSystem.GetElementType(expression.Type);
             try
             {
-                return (IQueryable)Activator.CreateInstance(
-                    typeof(LinqifyQueryable<>)
-                        .MakeGenericType(elementType),
-                    new object[] { this, expression });
+                return (IQueryable) Activator.CreateInstance(
+                    typeof (LinqifyQueryable<>)
+                        .MakeGenericType(elementType), this, expression);
             }
             catch (TargetInvocationException tie)
             {
@@ -37,8 +36,8 @@ namespace LinqToVso.Linqify
         }
 
         /// <summary>
-        /// generic version, returns current query to
-        /// calling code as its constructing the query
+        ///     generic version, returns current query to
+        ///     calling code as its constructing the query
         /// </summary>
         /// <typeparam name="TResult">current object type being worked with</typeparam>
         /// <param name="expression">expression tree for query</param>
@@ -49,17 +48,17 @@ namespace LinqToVso.Linqify
         }
 
         /// <summary>
-        /// non-generic execute, delegates execution to LinqifyContext
+        ///     non-generic execute, delegates execution to LinqifyContext
         /// </summary>
         /// <param name="expression">Expression Tree</param>
         /// <returns>list of results from query</returns>
         public object Execute(Expression expression)
         {
-            Type elementType = TypeSystem.GetElementType(expression.Type);
+            var elementType = TypeSystem.GetElementType(expression.Type);
 
-            return GetType().GetTypeInfo()
+            return this.GetType().GetTypeInfo()
                 .DeclaredMethods.First(meth => meth.IsGenericMethod && meth.Name == "Execute")
-                .Invoke(this, new object[] { expression });
+                .Invoke(this, new object[] {expression});
         }
 
         public TResult Execute<TResult>(Expression expression)
@@ -68,27 +67,32 @@ namespace LinqToVso.Linqify
         }
 
         /// <summary>
-        /// generic execute, delegates execution to LinqifyContext
+        ///     generic execute, delegates execution to LinqifyContext
         /// </summary>
         /// <typeparam name="TResult">type of query</typeparam>
         /// <param name="expression">Expression tree</param>
         /// <returns>list of results from query</returns>
         public TResult Execute<TResult>(Expression expression, IList<CustomApiParameter> customParameters = null)
         {
-            bool isEnumerable =
-                typeof(TResult).Name == "IEnumerable`1" ||
-                typeof(TResult).Name == "IEnumerable";
+            var isEnumerable =
+                typeof (TResult).Name == "IEnumerable`1" ||
+                typeof (TResult).Name == "IEnumerable";
 
-            Type resultType = new MethodCallExpressionTypeFinder().GetGenericType(expression);
-            var genericArguments = new[] { resultType };
+            var resultType = new MethodCallExpressionTypeFinder().GetGenericType(expression);
+            var genericArguments = new[] {resultType};
 
-            var methodInfo = Context.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
-            MethodInfo genericMethodInfo = methodInfo.MakeGenericMethod(genericArguments);
+            var methodInfo = this.Context.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
+            var genericMethodInfo = methodInfo.MakeGenericMethod(genericArguments);
 
             try
             {
-                var exeTask = Task.Run(() => (Task<object>)genericMethodInfo.Invoke(Context, new object[] { expression, isEnumerable, customParameters }));
-                return (TResult)exeTask.Result;
+                var exeTask =
+                    Task.Run(
+                        () =>
+                            (Task<object>)
+                                genericMethodInfo.Invoke(this.Context,
+                                    new object[] {expression, isEnumerable, customParameters}));
+                return (TResult) exeTask.Result;
             }
             catch (TargetInvocationException tex)
             {
@@ -99,22 +103,27 @@ namespace LinqToVso.Linqify
             }
         }
 
-        public async Task<object> ExecuteAsync<TResult>(Expression expression, IList<CustomApiParameter> customParameters = null)
+        public async Task<object> ExecuteAsync<TResult>(Expression expression,
+            IList<CustomApiParameter> customParameters = null)
             where TResult : class
         {
             try
             {
-                bool isEnumerable =
-                    typeof(TResult).Name == "IEnumerable`1" ||
-                    typeof(TResult).Name == "IEnumerable";
+                var isEnumerable =
+                    typeof (TResult).Name == "IEnumerable`1" ||
+                    typeof (TResult).Name == "IEnumerable";
 
-                Type resultType = new MethodCallExpressionTypeFinder().GetGenericType(expression);
-                var genericArguments = new[] { resultType };
+                var resultType = new MethodCallExpressionTypeFinder().GetGenericType(expression);
+                var genericArguments = new[] {resultType};
 
-                var methodInfo = Context.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
-                MethodInfo genericMethodInfo = methodInfo.MakeGenericMethod(genericArguments);
+                var methodInfo = this.Context.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
+                var genericMethodInfo = methodInfo.MakeGenericMethod(genericArguments);
 
-                var result = await ((Task<object>)genericMethodInfo.Invoke(Context, new object[] { expression, isEnumerable, customParameters })).ConfigureAwait(false);
+                var result =
+                    await
+                        ((Task<object>)
+                            genericMethodInfo.Invoke(this.Context,
+                                new object[] {expression, isEnumerable, customParameters})).ConfigureAwait(false);
                 return result;
             }
             catch (TargetInvocationException tex)

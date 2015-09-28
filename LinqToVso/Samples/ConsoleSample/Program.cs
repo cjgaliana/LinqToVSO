@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using LinqToVso;
 using LinqToVso.Linqify;
-using LinqToVso.PCL.Authorization;
-using LinqToVso.PCL.Context;
 using LinqToVso.PCL.Hooks;
 
 namespace ConsoleSample
@@ -23,11 +21,10 @@ namespace ConsoleSample
         {
             try
             {
-                var handler = new BasicAuthHttpClientHandler("user", "password");
-                var vsoExecutor = new VsoExecute(handler);
-                var context = new VsoContext(vsoExecutor);
+                var context = new VsoContext("account", "user", "password");
+                //var context = new VsoContext("account", "oauthToken");
 
-                var projects = await context.Projects.Include("Test").ToListAsync();
+                var projects = await context.Projects.ToListAsync();
 
                 //var teams = await context.Teams
                 //    .Where(x => x.ProjectId == projects.FirstOrDefault().Id)

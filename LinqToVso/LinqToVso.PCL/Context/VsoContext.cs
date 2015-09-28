@@ -1,10 +1,17 @@
-﻿using LinqToVso.Linqify;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using LinqToVso.Linqify;
+using LinqToVso.PCL.Authorization;
+using LinqToVso.PCL.Context;
 using LinqToVso.PCL.Factories;
 
 namespace LinqToVso
 {
     public partial class VsoContext : LinqifyContext
     {
+        private string _apiVersion;
+
         #region Header Constants
 
         private readonly string DefaultUserAgent = "LINQ-To-VSO/1.0";
@@ -18,11 +25,20 @@ namespace LinqToVso
 
         #endregion Constants
 
-        private string _apiVersion;
+        public VsoContext(string account, string oauthToken)
+            : this(account, new VsoExecute(new OauthHttpClientHandler(oauthToken)))
+        {
+        }
 
-        public VsoContext(ILinqifyExecutor executor)
+        public VsoContext(string account, string user, string password)
+            : this(account, new VsoExecute(new BasicAuthHttpClientHandler(user, password)))
+        {
+        }
+
+        public VsoContext(string account, ILinqifyExecutor executor)
             : base(executor)
         {
+            this.Account = account;
         }
 
         /// <summary>
@@ -73,7 +89,7 @@ namespace LinqToVso
 
         protected override IRequestProcessor<T> CreateRequestProcessor<T>(string requestType)
         {
-            IRequestProcessor<T> req = VsoRequestProcessorFactory.Create<T>(requestType);
+            var req = VsoRequestProcessorFactory.Create<T>(requestType);
 
             if (this.BaseUrl != null)
             {
@@ -84,5 +100,13 @@ namespace LinqToVso
 
             return req;
         }
+
+        public override Task<object> ExecuteAsync<T>(Expression expression, bool isEnumerable,
+            IList<CustomApiParameter> customParameters = null)
+        {
+            return base.ExecuteAsync<T>(expression, isEnumerable, customParameters);
+        }
+
+
     }
 }

@@ -12,6 +12,22 @@ namespace LinqToVso.Linqify
     {
         protected IList<CustomApiParameter> _customParameters;
 
+        protected LinqifyContext(ILinqifyExecutor executor)
+        {
+            if (executor == null)
+            {
+                throw new ArgumentNullException("executor", "The API executor cannot be null");
+            }
+            this.Executor = executor;
+        }
+
+        /// <summary>
+        ///     This contains the JSON string from the API response to the most recent query.
+        /// </summary>
+        public string RawResult { get; protected set; }
+
+        public ILinqifyExecutor Executor { get; protected set; }
+
         /// <summary>
         ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -41,41 +57,26 @@ namespace LinqToVso.Linqify
         }
 
         /// <summary>
-        ///     This contains the JSON string from the API response to the most recent query.
-        /// </summary>
-        public string RawResult { get; protected set; }
-
-        public ILinqifyExecutor Executor { get; protected set; }
-
-        protected LinqifyContext(ILinqifyExecutor executor)
-        {
-            if (executor == null)
-            {
-                throw new ArgumentNullException("executor", "The API executor cannot be null");
-            }
-            this.Executor = executor;
-        }
-
-        /// <summary>
         ///     Called by QueryProvider to execute queries
         /// </summary>
         /// <param name="expression">ExpressionTree to parse</param>
         /// <param name="isEnumerable">Indicates whether expression is enumerable</param>
         /// <param name="customParameters">Custom API parameters passed from the Linq query</param>
         /// <returns>list of objects with query results</returns>
-        public virtual async Task<object> ExecuteAsync<T>(Expression expression, bool isEnumerable, IList<CustomApiParameter> customParameters = null)
+        public virtual async Task<object> ExecuteAsync<T>(Expression expression, bool isEnumerable,
+            IList<CustomApiParameter> customParameters = null)
             where T : class
         {
             this._customParameters = customParameters;
 
             // request processor is specific to request type (i.e. Status, User, etc.)
-            IRequestProcessor<T> reqProc = this.CreateRequestProcessor<T>(expression);
+            var reqProc = this.CreateRequestProcessor<T>(expression);
 
             // get input parameters that go on the REST query URL
-            Dictionary<string, string> parameters = GetRequestParameters(expression, reqProc);
+            var parameters = GetRequestParameters(expression, reqProc);
 
             // construct REST endpoint, based on input parameters
-            Request request = reqProc.BuildUrl(parameters);
+            var request = reqProc.BuildUrl(parameters);
 
             string results;
 
@@ -86,21 +87,21 @@ namespace LinqToVso.Linqify
             this.RawResult = results;
 
             // Transform results into objects
-            List<T> queryableList = reqProc.ProcessResults(results);
+            var queryableList = reqProc.ProcessResults(results);
 
             // Copy the IEnumerable entities to an IQueryable.
-            IQueryable<T> queryableItems = queryableList.AsQueryable();
+            var queryableItems = queryableList.AsQueryable();
 
             // Copy the expression tree that was passed in, changing only the first
             // argument of the innermost MethodCallExpression.
             // -- Transforms IQueryable<T> into List<T>, which is (IEnumerable<T>)
             var treeCopier = new ExpressionTreeModifier<T>(queryableItems);
-            Expression newExpressionTree = treeCopier.CopyAndModify(expression);
+            var newExpressionTree = treeCopier.CopyAndModify(expression);
 
             // This step creates an IQueryable that executes by replacing Queryable methods with Enumerable methods.
             if (isEnumerable)
             {
-                IQueryable data = queryableItems.Provider.CreateQuery(newExpressionTree);
+                var data = queryableItems.Provider.CreateQuery(newExpressionTree);
                 return data;
             }
 
@@ -119,15 +120,15 @@ namespace LinqToVso.Linqify
             var parameters = new Dictionary<string, string>();
 
             // WHERE CLAUSE
-            MethodCallExpression[] whereExpressions = new WhereClauseFinder().GetAllWheres(expression);
-            foreach (MethodCallExpression whereExpression in whereExpressions)
+            var whereExpressions = new WhereClauseFinder().GetAllWheres(expression);
+            foreach (var whereExpression in whereExpressions)
             {
-                var lambdaExpression = (LambdaExpression)((UnaryExpression)(whereExpression.Arguments[1])).Operand;
+                var lambdaExpression = (LambdaExpression) ((UnaryExpression) (whereExpression.Arguments[1])).Operand;
 
                 // translate variable references in expression into constants
-                lambdaExpression = (LambdaExpression)Evaluator.PartialEval(lambdaExpression);
+                lambdaExpression = (LambdaExpression) Evaluator.PartialEval(lambdaExpression);
 
-                Dictionary<string, string> newParameters = reqProc.GetParameters(lambdaExpression);
+                var newParameters = reqProc.GetParameters(lambdaExpression);
                 foreach (var newParameter in newParameters)
                 {
                     if (!parameters.ContainsKey(newParameter.Key))
@@ -138,15 +139,15 @@ namespace LinqToVso.Linqify
             }
 
             // TAKE CLAUSE
-            MethodCallExpression[] takeExpressions = new TakeClauseFinder().GetAllTakes(expression);
-            foreach (MethodCallExpression takeExpression in takeExpressions)
+            var takeExpressions = new TakeClauseFinder().GetAllTakes(expression);
+            foreach (var takeExpression in takeExpressions)
             {
                 parameters.Add(TakeClauseFinder.TakeMethodName, takeExpression.Arguments[1].ToString());
             }
 
             // SKIP CLAUSE
-            MethodCallExpression[] skipExpressions = new SkipClauseFinder().GetAllSkips(expression);
-            foreach (MethodCallExpression skipExpression in skipExpressions)
+            var skipExpressions = new SkipClauseFinder().GetAllSkips(expression);
+            foreach (var skipExpression in skipExpressions)
             {
                 parameters.Add(SkipClauseFinder.SkipMethodName, skipExpression.Arguments[1].ToString());
             }
@@ -157,9 +158,9 @@ namespace LinqToVso.Linqify
         protected internal virtual IRequestProcessor<T> CreateRequestProcessor<T>()
             where T : class
         {
-            string requestType = typeof(T).Name;
+            var requestType = typeof (T).Name;
 
-            IRequestProcessor<T> req = CreateRequestProcessor<T>(requestType);
+            var req = this.CreateRequestProcessor<T>(requestType);
 
             return req;
         }
@@ -178,9 +179,9 @@ namespace LinqToVso.Linqify
                     "Expression passed to CreateRequestProcessor must not be null.");
             }
 
-            string requestType = new MethodCallExpressionTypeFinder().GetGenericType(expression).Name;
+            var requestType = new MethodCallExpressionTypeFinder().GetGenericType(expression).Name;
 
-            IRequestProcessor<T> req = this.CreateRequestProcessor<T>(requestType);
+            var req = this.CreateRequestProcessor<T>(requestType);
             return req;
         }
 

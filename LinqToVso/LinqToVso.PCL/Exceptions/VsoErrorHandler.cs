@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -20,15 +19,16 @@ namespace LinqToVso.PCL.Exceptions
 
         private static async Task HandleUnauthorizedAsync(HttpResponseMessage httpResponseMessage)
         {
-            string responseStr = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var responseStr = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            VsoErrorDetails error = ParseVsoErrorMessage(responseStr);
+            var error = ParseVsoErrorMessage(responseStr);
 
-            string message = error.Message + " - Please visit the LINQ to Twitter FAQ (at the HelpLink) for help on resolving this error.";
+            var message = error.Message +
+                          " - Please visit the LINQ to VSO FAQ (at the HelpLink) and open a issue for help on resolving this error.";
 
             throw new LinqToVsoQueryException(message)
             {
-                HelpLink = "https://linqtotwitter.codeplex.com/wikipage?title=LINQ%20to%20Twitter%20FAQ",
+                HelpLink = "https://github.com/cjgaliana/LinqToVSO",
                 ErrorCode = error.Code,
                 StatusCode = HttpStatusCode.Unauthorized,
                 ReasonPhrase = httpResponseMessage.ReasonPhrase
@@ -64,9 +64,7 @@ namespace LinqToVso.PCL.Exceptions
             //    }
             //}
 
-            return new VsoErrorDetails { Message = response };
+            return new VsoErrorDetails {Message = response};
         }
-
-      
     }
 }

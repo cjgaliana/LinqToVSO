@@ -28,16 +28,13 @@ namespace LinqToVso.Linqify
         {
             T statusType;
 
-            if (queryType.GetType() == typeof(string))
+            if (queryType.GetType() == typeof (string))
             {
-                statusType = (T)Enum.Parse(
-                    enumType: typeof(T),
-                    value: queryType,
-                    ignoreCase: true);
+                statusType = (T) Enum.Parse(typeof (T), queryType, true);
             }
             else
             {
-                statusType = (T)Enum.ToObject(typeof(T), int.Parse(queryType));
+                statusType = (T) Enum.ToObject(typeof (T), int.Parse(queryType));
             }
 
             return statusType;

@@ -32,7 +32,7 @@ namespace LinqToVso.Linqify
             }
 
             var other = obj as QueryParameter;
-            return CompareTo(other);
+            return this.CompareTo(other);
         }
 
         public int CompareTo(QueryParameter other)

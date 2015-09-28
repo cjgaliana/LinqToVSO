@@ -9,7 +9,6 @@ namespace LinqToVso.Linqify
     public class SkipClauseFinder : ExpressionVisitor
     {
         public static readonly string SkipMethodName = "Skip";
-
         // holds all take expressions
         private readonly List<MethodCallExpression> _skipExpressions = new List<MethodCallExpression>();
 

@@ -11,7 +11,6 @@ namespace LinqToVso.Linqify
         }
 
         public string Endpoint { get; set; }
-
         public IList<QueryParameter> RequestParameters { get; internal set; }
 
         public string QueryString
@@ -23,7 +22,7 @@ namespace LinqToVso.Linqify
         {
             get
             {
-                string queryString = this.QueryString;
+                var queryString = this.QueryString;
 
                 if (queryString.Length > 0)
                 {

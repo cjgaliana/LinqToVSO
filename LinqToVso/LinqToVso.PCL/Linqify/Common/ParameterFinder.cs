@@ -25,14 +25,14 @@ namespace LinqToVso.Linqify
     public class ParameterFinder<T> : ExpressionVisitor
     {
         /// <summary>
-        ///     expression being searched
-        /// </summary>
-        private readonly Expression _expression;
-
-        /// <summary>
         ///     parameters to search for
         /// </summary>
         private Dictionary<string, string> _parameters;
+
+        /// <summary>
+        ///     expression being searched
+        /// </summary>
+        private readonly Expression _expression;
 
         /// <summary>
         ///     keep track of expression and parameter list
@@ -80,12 +80,12 @@ namespace LinqToVso.Linqify
                 || be.NodeType == ExpressionType.LessThanOrEqual
                 || be.NodeType == ExpressionType.NotEqual)
             {
-                foreach (string param in this.ParameterNames)
+                foreach (var param in this.ParameterNames)
                 {
-                    if (ExpressionTreeHelpers.IsMemberEqualsValueExpression(be, typeof(T), param))
+                    if (ExpressionTreeHelpers.IsMemberEqualsValueExpression(be, typeof (T), param))
                     {
                         this._parameters.Add(param,
-                            ExpressionTreeHelpers.GetValueFromEqualsExpression(be, typeof(T), param));
+                            ExpressionTreeHelpers.GetValueFromEqualsExpression(be, typeof (T), param));
                         return be;
                     }
                 }
@@ -97,7 +97,7 @@ namespace LinqToVso.Linqify
 
         protected override Expression VisitMethodCall(MethodCallExpression me)
         {
-            foreach (string param in this.ParameterNames)
+            foreach (var param in this.ParameterNames)
             {
                 if (me.Method.Name == "CompareString" && (me.Arguments[0] as MemberExpression).Member.Name == param)
                 {

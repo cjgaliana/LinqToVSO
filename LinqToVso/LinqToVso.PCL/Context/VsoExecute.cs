@@ -1,12 +1,12 @@
-﻿using LinqToVso.Linqify;
-using LinqToVso.PCL.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LinqToVso.Linqify;
+using LinqToVso.PCL.Exceptions;
 
 namespace LinqToVso.PCL.Context
 {
@@ -72,20 +72,6 @@ namespace LinqToVso.PCL.Context
         public int ReadWriteTimeout { get; set; }
 
         /// <summary>
-        ///     Releases unmanaged and - optionally - managed resources
-        /// </summary>
-        /// <param name="disposing">
-        ///     <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only
-        ///     unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
-        }
-
-        /// <summary>
         ///     Used in queries to read information from VSO API endpoints.
         /// </summary>
         /// <param name="request">Request with url endpoint and all query parameters</param>
@@ -97,7 +83,7 @@ namespace LinqToVso.PCL.Context
             {
                 var req = new HttpRequestMessage(HttpMethod.Get, new Uri(request.FullUrl));
 
-                Dictionary<string, string> parms = request.RequestParameters
+                var parms = request.RequestParameters
                     .ToDictionary(
                         key => key.Name,
                         val => val.Value);
@@ -108,7 +94,7 @@ namespace LinqToVso.PCL.Context
                     {
                         client.Timeout = TimeSpan.FromSeconds(this.Timeout);
                     }
-                    HttpResponseMessage msg = await client.SendAsync(req, this.CancellationToken).ConfigureAwait(false);
+                    var msg = await client.SendAsync(req, this.CancellationToken).ConfigureAwait(false);
 
                     return await this.HandleResponseAsync(msg).ConfigureAwait(false);
                 }
@@ -120,7 +106,8 @@ namespace LinqToVso.PCL.Context
             }
         }
 
-        public async Task<string> PostToApiAsync<T>(string url, IDictionary<string, string> postData, CancellationToken cancelToken)
+        public async Task<string> PostToApiAsync<T>(string url, IDictionary<string, string> postData,
+            CancellationToken cancelToken)
         {
             var cleanPostData = new Dictionary<string, string>();
 
@@ -135,18 +122,33 @@ namespace LinqToVso.PCL.Context
                 }
             }
 
-            var content = new StringContent(dataString.ToString().TrimEnd('&'), Encoding.UTF8, "application/x-www-form-urlencoded");
+            var content = new StringContent(dataString.ToString().TrimEnd('&'), Encoding.UTF8,
+                "application/x-www-form-urlencoded");
 
             using (var client = new HttpClient(this.HttpClientHandler))
             {
-                if (Timeout != 0)
+                if (this.Timeout != 0)
                 {
-                    client.Timeout = TimeSpan.FromSeconds(Timeout);
+                    client.Timeout = TimeSpan.FromSeconds(this.Timeout);
                 }
 
-                HttpResponseMessage msg = await client.PostAsync(url, content, cancelToken).ConfigureAwait(false);
+                var msg = await client.PostAsync(url, content, cancelToken).ConfigureAwait(false);
 
-                return await HandleResponseAsync(msg);
+                return await this.HandleResponseAsync(msg);
+            }
+        }
+
+        /// <summary>
+        ///     Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing">
+        ///     <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only
+        ///     unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
             }
         }
 
@@ -156,11 +158,11 @@ namespace LinqToVso.PCL.Context
 
             this.ResponseHeaders =
                 (from header in msg.Headers
-                 select new
-                 {
-                     header.Key,
-                     Value = string.Join(", ", header.Value)
-                 })
+                    select new
+                    {
+                        header.Key,
+                        Value = string.Join(", ", header.Value)
+                    })
                     .ToDictionary(
                         pair => pair.Key,
                         pair => pair.Value);

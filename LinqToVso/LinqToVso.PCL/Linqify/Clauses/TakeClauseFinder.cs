@@ -9,7 +9,6 @@ namespace LinqToVso.Linqify
     public class TakeClauseFinder : ExpressionVisitor
     {
         public static readonly string TakeMethodName = "Take";
-
         // holds all take expressions
         private readonly List<MethodCallExpression> _takeExpressions = new List<MethodCallExpression>();
 

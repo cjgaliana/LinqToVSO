@@ -58,9 +58,9 @@ namespace LinqToVso.Linqify
         /// </summary>
         private class Nominator : ExpressionVisitor
         {
-            private readonly Func<Expression, bool> _fnCanBeEvaluated;
             private HashSet<Expression> _candidates;
             private bool _cannotBeEvaluated;
+            private readonly Func<Expression, bool> _fnCanBeEvaluated;
 
             internal Nominator(Func<Expression, bool> fnCanBeEvaluated)
             {
@@ -78,7 +78,7 @@ namespace LinqToVso.Linqify
             {
                 if (expression != null)
                 {
-                    bool saveCannotBeEvaluated = this._cannotBeEvaluated;
+                    var saveCannotBeEvaluated = this._cannotBeEvaluated;
                     this._cannotBeEvaluated = false;
                     base.Visit(expression);
 
@@ -140,8 +140,8 @@ namespace LinqToVso.Linqify
                     return e;
                 }
 
-                LambdaExpression lambda = Expression.Lambda(e);
-                Delegate fn = lambda.Compile();
+                var lambda = Expression.Lambda(e);
+                var fn = lambda.Compile();
 
                 return Expression.Constant(fn.DynamicInvoke(null), e.Type);
             }

@@ -35,9 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Authorization\BasicAuth.cs" />
     <Compile Include="Authorization\BasicAuthHttpClientHandler.cs" />
-    <Compile Include="Authorization\IAuthorizer.cs" />
+    <Compile Include="Authorization\OauthHttpClientHandler.cs" />
     <Compile Include="Context\VsoExecute.cs" />
     <Compile Include="Exceptions\LinqToVsoQueryException.cs" />
     <Compile Include="Exceptions\VsoErrorDetails.cs" />

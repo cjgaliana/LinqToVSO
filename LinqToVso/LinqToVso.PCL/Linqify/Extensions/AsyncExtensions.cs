@@ -13,7 +13,10 @@ namespace LinqToVso.Linqify
             var provider = query.Provider as LinqifyQueryProvider;
             var customParameters = apiQuery.CustomParameters;
 
-            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<IEnumerable<T>>(query.Expression, customParameters).ConfigureAwait(false);
+            var results =
+                (IEnumerable<T>)
+                    await
+                        provider.ExecuteAsync<IEnumerable<T>>(query.Expression, customParameters).ConfigureAwait(false);
 
             return results.ToList();
         }
@@ -25,7 +28,9 @@ namespace LinqToVso.Linqify
             var provider = query.Provider as LinqifyQueryProvider;
             var customParameters = apiQuery.CustomParameters;
 
-            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression, customParameters).ConfigureAwait(false);
+            var results =
+                (IEnumerable<T>)
+                    await provider.ExecuteAsync<T>(query.Expression, customParameters).ConfigureAwait(false);
 
             return results.FirstOrDefault();
         }
@@ -37,7 +42,9 @@ namespace LinqToVso.Linqify
             var provider = query.Provider as LinqifyQueryProvider;
             var customParameters = apiQuery.CustomParameters;
 
-            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression, customParameters).ConfigureAwait(false);
+            var results =
+                (IEnumerable<T>)
+                    await provider.ExecuteAsync<T>(query.Expression, customParameters).ConfigureAwait(false);
 
             return results.First();
         }
@@ -49,7 +56,9 @@ namespace LinqToVso.Linqify
             var provider = query.Provider as LinqifyQueryProvider;
             var customParameters = apiQuery.CustomParameters;
 
-            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression, customParameters).ConfigureAwait(false);
+            var results =
+                (IEnumerable<T>)
+                    await provider.ExecuteAsync<T>(query.Expression, customParameters).ConfigureAwait(false);
 
             return results.SingleOrDefault();
         }
@@ -61,13 +70,15 @@ namespace LinqToVso.Linqify
             var provider = query.Provider as LinqifyQueryProvider;
             var customParameters = apiQuery.CustomParameters;
 
-            IEnumerable<T> results = (IEnumerable<T>)await provider.ExecuteAsync<T>(query.Expression, customParameters).ConfigureAwait(false);
+            var results =
+                (IEnumerable<T>)
+                    await provider.ExecuteAsync<T>(query.Expression, customParameters).ConfigureAwait(false);
 
             return results.Single();
         }
 
         /// <summary>
-        /// Enables use of .NET Cancellation Framework for this query.
+        ///     Enables use of .NET Cancellation Framework for this query.
         /// </summary>
         /// <returns>Streaming instance to support further LINQ opertations</returns>
         public static IQueryable<T> WithCancellation<T>(this IQueryable<T> query, CancellationToken cancelToken)
@@ -77,9 +88,9 @@ namespace LinqToVso.Linqify
             if (provider != null)
             {
                 provider
-                       .Context
-                       .Executor
-                       .CancellationToken = cancelToken;
+                    .Context
+                    .Executor
+                    .CancellationToken = cancelToken;
             }
 
             return query;

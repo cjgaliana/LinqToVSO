@@ -42,7 +42,7 @@ namespace LinqToVso.Linqify
                 return false;
             }
 
-            var be = (BinaryExpression)exp;
+            var be = (BinaryExpression) exp;
 
             // Assert.
             if (IsSpecificMemberExpression(be.Left, declaringType, memberName)
@@ -66,15 +66,15 @@ namespace LinqToVso.Linqify
         {
             // adjust for enums or VB ConvertChecked
             // VB wraps Type in a ConvertChecked that we must extract
-            Expression tempExp =
+            var tempExp =
                 exp.NodeType == ExpressionType.Convert
                 || exp.NodeType == ExpressionType.ConvertChecked
                     ? (exp as UnaryExpression).Operand
                     : exp;
 
             return ((tempExp is MemberExpression)
-                    && (((MemberExpression)tempExp).Member.DeclaringType == declaringType)
-                    && (((MemberExpression)tempExp).Member.Name == memberName));
+                    && (((MemberExpression) tempExp).Member.DeclaringType == declaringType)
+                    && (((MemberExpression) tempExp).Member.Name == memberName));
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace LinqToVso.Linqify
                 || be.Left.NodeType == ExpressionType.ConvertChecked)
             {
                 // adjust for enums & VB ConvertChecked
-                MemberExpression me =
+                var me =
                     be.Left.NodeType == ExpressionType.Convert
                     || be.Left.NodeType == ExpressionType.ConvertChecked
                         ? (be.Left as UnaryExpression).Operand as MemberExpression
@@ -117,7 +117,7 @@ namespace LinqToVso.Linqify
             }
             else if (be.Right.NodeType == ExpressionType.MemberAccess)
             {
-                var me = (MemberExpression)be.Right;
+                var me = (MemberExpression) be.Right;
 
                 if (me.Member.DeclaringType == memberDeclaringType
                     && me.Member.Name == memberName)
@@ -139,13 +139,13 @@ namespace LinqToVso.Linqify
         {
             if (expression.NodeType == ExpressionType.Constant)
             {
-                return ((ConstantExpression)expression).Value.ToString();
+                return ((ConstantExpression) expression).Value.ToString();
             }
 
             if (expression.NodeType == ExpressionType.Convert
                 || expression.NodeType == ExpressionType.ConvertChecked)
             {
-                return ((int)((expression as UnaryExpression).Operand as ConstantExpression).Value).ToString();
+                return ((int) ((expression as UnaryExpression).Operand as ConstantExpression).Value).ToString();
             }
 
             throw new InvalidQueryException(

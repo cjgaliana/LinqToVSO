@@ -26,7 +26,7 @@ namespace LinqToVso.Linqify
 
             // lets provider reach back to LinqifyContext,
             // where execute implementation resides
-            ((LinqifyQueryProvider)this.Provider).Context = context;
+            ((LinqifyQueryProvider) this.Provider).Context = context;
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace LinqToVso.Linqify
                 throw new ArgumentNullException("expression");
             }
 
-            if (!typeof(IQueryable<T>).GetTypeInfo().IsAssignableFrom(expression.Type.GetTypeInfo()))
+            if (!typeof (IQueryable<T>).GetTypeInfo().IsAssignableFrom(expression.Type.GetTypeInfo()))
             {
                 throw new ArgumentOutOfRangeException("expression");
             }
@@ -74,7 +74,7 @@ namespace LinqToVso.Linqify
         /// </summary>
         public Type ElementType
         {
-            get { return typeof(T); }
+            get { return typeof (T); }
         }
 
         /// <summary>
@@ -83,9 +83,9 @@ namespace LinqToVso.Linqify
         /// <returns>query results</returns>
         public IEnumerator<T> GetEnumerator()
         {
-            Task<object> tsk =
-                Task.Run(() => (((LinqifyQueryProvider)this.Provider).ExecuteAsync<IEnumerable<T>>(this.Expression)));
-            return ((IEnumerable<T>)tsk.Result).GetEnumerator();
+            var tsk =
+                Task.Run(() => (((LinqifyQueryProvider) this.Provider).ExecuteAsync<IEnumerable<T>>(this.Expression)));
+            return ((IEnumerable<T>) tsk.Result).GetEnumerator();
         }
 
         /// <summary>
