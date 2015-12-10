@@ -11,7 +11,7 @@ In development
 Type | Status | Comments
 ------------- | ------------- | -------------
 Basic  | Done| Accounts and Profiles not supported.
-Oauth  |Done|
+Oauth  |Done| Not supported for mobile apps (only web flow is supported)
 
 **Endpoints**
 
