@@ -1,0 +1,20 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:LinqToVso.Samples.UWP.Styles">
+
+
+    <Color x:Key="AccentColour">#0B5FA5</Color>
+    <Color x:Key="AccentLightColour">#3F8FD2</Color>
+    <Color x:Key="AccentLighterColour">#66A1D2</Color>
+    <Color x:Key="AccentDarkColour">#043C6B</Color>
+    <Color x:Key="ComplimentaryColour">#A66000</Color>
+
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColour}" />
+    <SolidColorBrush x:Key="AccentLightBrush" Color="{StaticResource AccentLightColour}" />
+    <SolidColorBrush x:Key="AccentLighterBrush" Color="{StaticResource AccentLighterColour}" />
+    <SolidColorBrush x:Key="AccentDarkBrush" Color="{StaticResource AccentDarkColour}" />
+    <SolidColorBrush x:Key="ComplimentaryBrush" Color="{StaticResource ComplimentaryColour}" />
+
+    
+</ResourceDictionary>

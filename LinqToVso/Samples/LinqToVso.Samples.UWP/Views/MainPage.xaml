@@ -1,0 +1,34 @@
+﻿<Page
+    x:Class="LinqToVso.Samples.UWP.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:LinqToVso.Samples.UWP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:linqToVso="using:LinqToVso"
+    xmlns:converters="using:LinqToVso.Samples.UWP.Converters"
+    mc:Ignorable="d"
+    DataContext="{Binding MainViewModel, Source={StaticResource ViewModelLocator}}">
+
+
+    <Page.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <GridView ItemsSource="{Binding Projects}">
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="linqToVso:Project">
+                    <StackPanel>
+                        <TextBlock Text="{x:Bind Name}" />
+                    </StackPanel>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+
+        <Button Content="Refresh" Command="{Binding RefreshCommand}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <ProgressRing IsActive="True" Height="50" Width="50"
+                      Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+    </Grid>
+</Page>
