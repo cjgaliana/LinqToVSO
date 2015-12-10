@@ -1,4 +1,4 @@
-﻿<Page
+﻿<local:BasePage
     x:Class="LinqToVso.Samples.UWP.Views.LoginPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,27 +9,27 @@
     mc:Ignorable="d"
     DataContext="{Binding LoginViewModel, Source={StaticResource ViewModelLocator}}">
 
-    <Page.Resources>
+    <local:BasePage.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    </Page.Resources>
+    </local:BasePage.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="Login using your visual studio account" />
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="https://" />
-                <TextBox PlaceholderText="account" Text="{Binding Account, Mode=TwoWay}" />
-                <TextBlock Text=".visualstudio.com" />
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0">
+            <TextBlock Text="Login using your visual studio account" Margin="0,0,0,12" FontWeight="Bold" Padding="0,0,0,8" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <TextBlock Text="https://" VerticalAlignment="Center" />
+                <TextBox PlaceholderText="account" Text="{Binding Account, Mode=TwoWay}" Width="125" VerticalAlignment="Center" />
+                <TextBlock Text=".visualstudio.com" VerticalAlignment="Center" />
             </StackPanel>
 
-            <TextBox Header="Username" PlaceholderText="username" Text="{Binding Username, Mode=TwoWay}" />
-            <PasswordBox Header="Password" PlaceholderText="password" Password="{Binding Password, Mode=TwoWay}" />
+            <TextBox Header="Username" PlaceholderText="username" Text="{Binding Username, Mode=TwoWay}" Margin="0,0,0,8" KeyDown="TextBox_KeyDown" />
+            <PasswordBox Header="Password" PlaceholderText="password" Password="{Binding Password, Mode=TwoWay}" Margin="0,0,0,12" KeyDown="TextBox_KeyDown"  />
 
-            <Button Content="Login" Command="{Binding LoginCommand}" />
+            <Button Content="Login" Command="{Binding LoginCommand}" Margin="0,12" HorizontalAlignment="Stretch" />
 
-            <HyperlinkButton Command="{Binding HelpCommand}">How to enable alternate credentials</HyperlinkButton>
+            <HyperlinkButton Command="{Binding HelpCommand}" HorizontalAlignment="Center" Content="How to enable alternate credentials" />
         </StackPanel>
         <ProgressRing IsActive="True" Height="50" Width="50"
                       Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
-</Page>
+</local:BasePage>

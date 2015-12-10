@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
+﻿using GalaSoft.MvvmLight.Command;
 using LinqToVso.Linqify;
 using LinqToVso.Samples.UWP.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace LinqToVso.Samples.UWP.ViewModels
 {
@@ -24,9 +25,16 @@ namespace LinqToVso.Samples.UWP.ViewModels
             _dialogService = dialogService;
 
             RefreshCommand = new RelayCommand(async () => await RefreshProjectsAsync());
+            OpenProjectCommand = new RelayCommand<Project>(this.OpenProjectDetails);
+        }
+
+        private void OpenProjectDetails(Project project)
+        {
+            this._navigationService.NavigateTo(PageKey.ProjectPage, project);
         }
 
         public ICommand RefreshCommand { get; private set; }
+        public ICommand OpenProjectCommand { get; private set; }
 
         public IList<Project> Projects
         {
@@ -39,7 +47,8 @@ namespace LinqToVso.Samples.UWP.ViewModels
             try
             {
                 IsBusy = true;
-                Projects = await _dataService.Context.Projects.ToListAsync();
+                Projects = await _dataService.Context.Projects
+                    .ToListAsync();
                 IsBusy = false;
             }
             catch (Exception ex)
@@ -47,6 +56,12 @@ namespace LinqToVso.Samples.UWP.ViewModels
                 IsBusy = false;
                 await _dialogService.ShowMessageAsync("Error loading projects", ex.Message);
             }
+        }
+
+        public override async Task OnNavigateTo(object parameter)
+        {
+            await base.OnNavigateTo(parameter);
+            this.RefreshCommand.Execute(null);
         }
     }
 }

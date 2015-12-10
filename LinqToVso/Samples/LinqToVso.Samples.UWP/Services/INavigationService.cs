@@ -1,24 +1,27 @@
-﻿using System;
+﻿using LinqToVso.Samples.UWP.Helpers;
+using LinqToVso.Samples.UWP.Views;
+using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using LinqToVso.Samples.UWP.Helpers;
-using LinqToVso.Samples.UWP.Views;
 
 namespace LinqToVso.Samples.UWP.Services
 {
     public enum PageKey
     {
         LoginPage,
-        MainPage
+        MainPage,
+        ProjectPage
     }
 
     public interface INavigationService
     {
         bool CanGoBack { get; }
+
         void GoBack();
 
         void NavigateTo(PageKey page);
+
         void NavigateTo(PageKey page, object parameters);
 
         void ClearNavigationStack();
@@ -33,15 +36,14 @@ namespace LinqToVso.Samples.UWP.Services
             _pages = new Dictionary<PageKey, Type>
             {
                 {PageKey.LoginPage, typeof (LoginPage)},
-                {PageKey.MainPage, typeof (MainPage)}
+                {PageKey.MainPage, typeof (MainPage)},
+                {PageKey.ProjectPage, typeof (ProjectPage)}
             };
 
             this.CurrentFrame = (Frame)Window.Current.Content;
         }
 
         private Frame CurrentFrame { get; set; }
-
-        public object NavigationParameter { get; private set; }
 
         public void GoBack()
         {
@@ -70,7 +72,6 @@ namespace LinqToVso.Samples.UWP.Services
             TitleBarHelper.ShowBackButton();
         }
 
-
         public void ClearNavigationStack()
         {
             try
@@ -86,7 +87,6 @@ namespace LinqToVso.Samples.UWP.Services
 
         private void NavigateToPage(Type page, object parameter = null)
         {
-            NavigationParameter = parameter;
             CurrentFrame.Navigate(page, parameter);
         }
     }

@@ -1,12 +1,12 @@
-﻿using System;
+﻿using LinqToVso.Linqify;
+using LinqToVso.PCL.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using LinqToVso.Linqify;
-using LinqToVso.PCL.Exceptions;
 
 namespace LinqToVso.PCL.Context
 {
@@ -88,16 +88,26 @@ namespace LinqToVso.PCL.Context
                         key => key.Name,
                         val => val.Value);
 
-                using (var client = new HttpClient(this.HttpClientHandler))
-                {
-                    if (this.Timeout != 0)
-                    {
-                        client.Timeout = TimeSpan.FromSeconds(this.Timeout);
-                    }
-                    var msg = await client.SendAsync(req, this.CancellationToken).ConfigureAwait(false);
+                //using (var client = new HttpClient(this.HttpClientHandler))
+                //{
+                //    if (this.Timeout != 0)
+                //    {
+                //        client.Timeout = TimeSpan.FromSeconds(this.Timeout);
+                //    }
+                //    var msg = await client.SendAsync(req, this.CancellationToken).ConfigureAwait(false);
 
-                    return await this.HandleResponseAsync(msg).ConfigureAwait(false);
+                //    return await this.HandleResponseAsync(msg).ConfigureAwait(false);
+                //}
+
+                var client = new HttpClient(this.HttpClientHandler);
+
+                if (this.Timeout != 0)
+                {
+                    client.Timeout = TimeSpan.FromSeconds(this.Timeout);
                 }
+                var msg = await client.SendAsync(req, this.CancellationToken).ConfigureAwait(false);
+
+                return await this.HandleResponseAsync(msg).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -158,11 +168,11 @@ namespace LinqToVso.PCL.Context
 
             this.ResponseHeaders =
                 (from header in msg.Headers
-                    select new
-                    {
-                        header.Key,
-                        Value = string.Join(", ", header.Value)
-                    })
+                 select new
+                 {
+                     header.Key,
+                     Value = string.Join(", ", header.Value)
+                 })
                     .ToDictionary(
                         pair => pair.Key,
                         pair => pair.Value);

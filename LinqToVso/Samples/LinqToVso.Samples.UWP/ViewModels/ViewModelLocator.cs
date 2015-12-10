@@ -16,6 +16,7 @@ namespace LinqToVso.Samples.UWP.ViewModels
 
         public LoginViewModel LoginViewModel => SimpleIoc.Default.GetInstance<LoginViewModel>();
         public MainViewModel MainViewModel => SimpleIoc.Default.GetInstance<MainViewModel>();
+        public ProjectDetailsViewModel ProjectDetailsViewModel => SimpleIoc.Default.GetInstance<ProjectDetailsViewModel>();
 
         private void RegisterServices()
         {
@@ -31,6 +32,7 @@ namespace LinqToVso.Samples.UWP.ViewModels
         {
             SimpleIoc.Default.Register<LoginViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<ProjectDetailsViewModel>();
         }
     }
 }
