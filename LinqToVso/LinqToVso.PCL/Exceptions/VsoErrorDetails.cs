@@ -1,4 +1,4 @@
-﻿namespace LinqToVso.PCL.Exceptions
+﻿namespace LinqToVso
 {
     public class VsoErrorDetails
     {

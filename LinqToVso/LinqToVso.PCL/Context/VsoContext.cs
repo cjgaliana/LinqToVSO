@@ -1,29 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using LinqToVso.Linqify;
+using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using LinqToVso.Linqify;
-using LinqToVso.PCL.Authorization;
-using LinqToVso.PCL.Context;
-using LinqToVso.PCL.Factories;
 
 namespace LinqToVso
 {
     public partial class VsoContext : LinqifyContext
     {
         private string _apiVersion;
-
-        #region Header Constants
-
-        private readonly string DefaultUserAgent = "LINQ-To-VSO/1.0";
-
-        #endregion Header Constants
-
-        #region Constants
-
-        private readonly string BaseUrlFormat = "https://{0}.visualstudio.com/DefaultCollection";
-        private readonly string DefaultApiVersion = "1.0";
-
-        #endregion Constants
 
         public VsoContext(string account, string oauthToken)
             : this(account, new VsoExecute(new OauthHttpClientHandler(oauthToken)))
@@ -48,7 +33,7 @@ namespace LinqToVso
 
         public string BaseUrl
         {
-            get { return string.Format(this.BaseUrlFormat, this.Account); }
+            get { return string.Format(VsoConstans.VSO_BASE_UR_FORMAT, this.Account); }
         }
 
         public string ApiVersion
@@ -56,7 +41,7 @@ namespace LinqToVso
             get
             {
                 return string.IsNullOrWhiteSpace(this._apiVersion)
-                    ? this.DefaultApiVersion
+                    ? VsoConstans.VSO_DEFAULT_API_VERSION
                     : this._apiVersion;
             }
             set { this._apiVersion = value; }
@@ -71,7 +56,7 @@ namespace LinqToVso
             {
                 return this.VsoExecutor != null
                     ? this.VsoExecutor.UserAgent
-                    : this.DefaultUserAgent;
+                    : VsoConstans.DEFAULT_USER_AGENT;
             }
             set
             {
@@ -87,13 +72,18 @@ namespace LinqToVso
         /// </summary>
         internal ILinqifyExecutor VsoExecutor { get; set; }
 
-        protected override IRequestProcessor<T> CreateRequestProcessor<T>(string requestType)
+        protected override IRequestProcessor<T> CreateRequestProcessor<T>(Type requestType)
         {
             var req = VsoRequestProcessorFactory.Create<T>(requestType);
 
-            if (this.BaseUrl != null)
+            if (!string.IsNullOrWhiteSpace(this.BaseUrl))
             {
                 req.BaseUrl = this.BaseUrl;
+            }
+
+            if (!string.IsNullOrWhiteSpace(this.ApiVersion))
+            {
+                req.ApiVersion = this.ApiVersion;
             }
 
             req.CustomParameters = this._customParameters;
@@ -101,12 +91,10 @@ namespace LinqToVso
             return req;
         }
 
-        public override Task<object> ExecuteAsync<T>(Expression expression, bool isEnumerable,
-            IList<CustomApiParameter> customParameters = null)
+        public override Task<object> ExecuteAsync<T>(
+            Expression expression, bool isEnumerable, IList<CustomApiParameter> customParameters = null)
         {
             return base.ExecuteAsync<T>(expression, isEnumerable, customParameters);
         }
-
-
     }
 }

@@ -1,9 +1,7 @@
-﻿using LinqToVso.PCL.Team;
-using LinqToVso.PCL.TeamRoom;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 
-namespace LinqToVso.PCL.Subscriptions
+namespace LinqToVso
 {
     public class Subscription
     {
@@ -52,8 +50,6 @@ namespace LinqToVso.PCL.Subscriptions
         [JsonProperty("consumerInputs")]
         public Consumerinputs ConsumerInputs { get; set; }
     }
-
-
 
     public class Publisherinputs
     {

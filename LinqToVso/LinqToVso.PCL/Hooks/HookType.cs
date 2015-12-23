@@ -1,4 +1,4 @@
-﻿namespace LinqToVso.PCL.Hooks
+﻿namespace LinqToVso
 {
     public enum HookType
     {

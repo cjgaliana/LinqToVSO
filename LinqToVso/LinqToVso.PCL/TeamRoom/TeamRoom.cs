@@ -1,9 +1,8 @@
-﻿using LinqToVso.PCL.Team;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
-namespace LinqToVso.PCL.TeamRoom
+namespace LinqToVso
 {
     public class TeamRoom
     {

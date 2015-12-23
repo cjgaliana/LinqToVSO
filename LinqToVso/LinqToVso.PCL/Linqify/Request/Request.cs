@@ -18,6 +18,16 @@ namespace LinqToVso.Linqify
             get { return Utilities.BuildQueryString(this.RequestParameters); }
         }
 
+        public void AddParameter(string name, string value)
+        {
+            if (this.RequestParameters == null)
+            {
+                this.RequestParameters = new List<QueryParameter>();
+            }
+
+            this.RequestParameters.Add(new QueryParameter(name, value));
+        }
+
         public string FullUrl
         {
             get

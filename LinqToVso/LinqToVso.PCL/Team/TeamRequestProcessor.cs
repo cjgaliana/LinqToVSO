@@ -11,25 +11,19 @@ using LinqToVso.Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LinqToVso.PCL.Team
+namespace LinqToVso
 {
-    public class TeamRequestProcessor<T> : IRequestProcessor<T> where T : class
+    public class TeamRequestProcessor<T> : VsoBaseProcessor<T> where T : class
     {
         private string _projectId;
 
-        /// <summary>
-        ///     base url for request
-        /// </summary>
-        public string BaseUrl { get; set; }
-
-        public IList<CustomApiParameter> CustomParameters { get; set; }
 
         /// <summary>
         ///     extracts parameters from lambda
         /// </summary>
         /// <param name="lambdaExpression">lambda expression with where clause</param>
         /// <returns>dictionary of parameter name/value pairs</returns>
-        public virtual Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
+        public override Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
                 new ParameterFinder<Team>(
@@ -52,7 +46,7 @@ namespace LinqToVso.PCL.Team
         /// <param name="parameters">criteria for url segments and parameters</param>
         /// <param name="expressionParameters"></param>
         /// <returns>URL conforming to VSO API</returns>
-        public virtual Request BuildUrl(Dictionary<string, string> expressionParameters)
+        public override Request BuildUrl(Dictionary<string, string> expressionParameters)
         {
             if (!expressionParameters.ContainsKey("ProjectId"))
             {
@@ -68,7 +62,7 @@ namespace LinqToVso.PCL.Team
 
             var url = string.Format("{0}/{1}/{2}/{3}",
                 this.BaseUrl,
-                "_apis/projects",
+                "projects",
                 this._projectId,
                 "teams");
             var req = new Request(url);
@@ -88,7 +82,7 @@ namespace LinqToVso.PCL.Team
             return req;
         }
 
-        public List<T> ProcessResults(string vsoResponse)
+        public override  List<T> ProcessResults(string vsoResponse)
         {
             var json = JObject.Parse(vsoResponse);
 
@@ -118,7 +112,7 @@ namespace LinqToVso.PCL.Team
 
             var url = string.Format("{0}/{1}/{2}/{3}/{4}",
                 this.BaseUrl,
-                "_apis/projects",
+                "projects",
                 projectId,
                 "teams",
                 teamId);

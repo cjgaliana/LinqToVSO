@@ -3,33 +3,27 @@
 // ProjectRequestProcessor.cs
 // 18 / 07 / 2015
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+using LinqToVso.Extensions;
 using LinqToVso.Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LinqToVso
 {
     /// <summary>
     ///     handles query processing for Projects
     /// </summary>
-    public class ProjectRequestProcessor<T> : IRequestProcessor<T> where T : class
+    public class ProjectRequestProcessor<T> : VsoBaseProcessor<T> where T : class
     {
-        /// <summary>
-        ///     base url for request
-        /// </summary>
-        public virtual string BaseUrl { get; set; }
-
-        public IList<CustomApiParameter> CustomParameters { get; set; }
-
         /// <summary>
         ///     extracts parameters from lambda
         /// </summary>
         /// <param name="lambdaExpression">lambda expression with where clause</param>
         /// <returns>dictionary of parameter name/value pairs</returns>
-        public virtual Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
+        public override Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
                 new ParameterFinder<Project>(
@@ -50,17 +44,14 @@ namespace LinqToVso
         /// <param name="parameters">criteria for url segments and parameters</param>
         /// <param name="expressionParameters"></param>
         /// <returns>URL conforming to VSO API</returns>
-        public virtual Request BuildUrl(Dictionary<string, string> expressionParameters)
+        public override Request BuildUrl(Dictionary<string, string> expressionParameters)
         {
-            if (expressionParameters.ContainsKey("Id"))
-            {
-                return this.GetTeamProjectDetailsUrl(expressionParameters);
-            }
-
-            return this.GetTeamProjectsUrl(expressionParameters);
+            return expressionParameters.ContainsKey("Id")
+                ? this.GetTeamProjectDetailsUrl(expressionParameters)
+                : this.GetTeamProjectsUrl(expressionParameters);
         }
 
-        public List<T> ProcessResults(string vsoResponse)
+        public override List<T> ProcessResults(string vsoResponse)
         {
             var json = JObject.Parse(vsoResponse);
 
@@ -75,27 +66,26 @@ namespace LinqToVso
 
         private Request GetTeamProjectsUrl(Dictionary<string, string> expressionParameters)
         {
-            // Gerenic call
-            var req = new Request(this.BaseUrl + "/_apis/projects");
-            var urlParams = req.RequestParameters;
+            // Generic call
+            var req = new Request(this.BaseUrl + "/projects");
 
             if (expressionParameters.ContainsKey("State"))
             {
-                var state = (ProjectState) (int.Parse(expressionParameters["State"]));
-                urlParams.Add(new QueryParameter("stateFilter", state.ToString()));
+                var state = (ProjectState)(int.Parse(expressionParameters["State"]));
+                req.AddParameter("stateFilter", state.ToString());
             }
 
             if (expressionParameters.ContainsKey(TakeClauseFinder.TakeMethodName))
             {
-                urlParams.Add(new QueryParameter("$top", expressionParameters[TakeClauseFinder.TakeMethodName]));
+                req.AddParameter("$top", expressionParameters[TakeClauseFinder.TakeMethodName]);
             }
 
             if (expressionParameters.ContainsKey(SkipClauseFinder.SkipMethodName))
             {
-                urlParams.Add(new QueryParameter("$skip", expressionParameters[SkipClauseFinder.SkipMethodName]));
+                req.AddParameter("$skip", expressionParameters[SkipClauseFinder.SkipMethodName]);
             }
 
-            urlParams.Add(new QueryParameter("api-version", "1.0"));
+            req.AddApiVersionParameter(this.ApiVersion);
             return req;
         }
 
@@ -103,23 +93,22 @@ namespace LinqToVso
         {
             var id = expressionParameters["Id"];
 
-            var url = string.Format("{0}{1}{2}", this.BaseUrl, "/_apis/projects/", id);
+            var url = string.Format("{0}{1}{2}", this.BaseUrl, "/projects/", id);
             var req = new Request(url);
-            var urlParams = req.RequestParameters;
 
-            if (this.CustomParameters != null && this.CustomParameters.Any(x => x.Key == "Capabilities"))
+            if (this.CustomParameters != null && this.CustomParameters.Any(x => x.Value.ToString() == Project.CapabilitiesKey))
             {
-                urlParams.Add(new QueryParameter("includeCapabilites", "true"));
+                req.AddParameter("includeCapabilites", "true");
             }
 
-            urlParams.Add(new QueryParameter("api-version", "1.0"));
+            req.AddApiVersionParameter(this.ApiVersion);
             return req;
         }
 
         private List<T> ProccessSinlgeResult(string vsoResponse)
         {
             var item = JsonConvert.DeserializeObject<T>(vsoResponse);
-            return new List<T> {item};
+            return new List<T> { item };
         }
 
         private bool IsSingleProjectDetailsResponse(JObject json)

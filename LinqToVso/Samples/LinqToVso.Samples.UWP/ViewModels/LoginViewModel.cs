@@ -25,14 +25,14 @@ namespace LinqToVso.Samples.UWP.ViewModels
             IDialogService dialogService,
             IVsoDataService vsoDataService)
         {
-            _navigationService = navigationService;
-            _authenticationService = authenticationService;
-            _launcherService = launcherService;
-            _dialogService = dialogService;
-            _vsoDataService = vsoDataService;
+            this._navigationService = navigationService;
+            this._authenticationService = authenticationService;
+            this._launcherService = launcherService;
+            this._dialogService = dialogService;
+            this._vsoDataService = vsoDataService;
 
-            LoginCommand = new RelayCommand(async () => await LoginAsync());
-            HelpCommand = new RelayCommand(async () => await OpenHelpAsync());
+            this.LoginCommand = new RelayCommand(async () => await this.LoginAsync());
+            this.HelpCommand = new RelayCommand(async () => await this.OpenHelpAsync());
         }
 
         public ICommand LoginCommand { get; private set; }
@@ -40,43 +40,43 @@ namespace LinqToVso.Samples.UWP.ViewModels
 
         public string Password
         {
-            get { return _password; }
-            set { Set(() => Password, ref _password, value); }
+            get { return this._password; }
+            set { this.Set(() => this.Password, ref this._password, value); }
         }
 
         public string Username
         {
-            get { return _username; }
-            set { Set(() => Username, ref _username, value); }
+            get { return this._username; }
+            set { this.Set(() => this.Username, ref this._username, value); }
         }
 
         public string Account
         {
-            get { return _account; }
-            set { Set(() => Account, ref _account, value); }
+            get { return this._account; }
+            set { this.Set(() => this.Account, ref this._account, value); }
         }
 
         private async Task OpenHelpAsync()
         {
             var url = "https://www.visualstudio.com/integrate/get-started/auth/overview";
-            await _launcherService.OpenWebSiteAsync(url);
+            await this._launcherService.OpenWebSiteAsync(url);
         }
 
         private async Task LoginAsync()
         {
             try
             {
-                IsBusy = true;
-                await _authenticationService.LoginAsync(Account, Username, Password);
-                _vsoDataService.Initialize(Account, Username, Password);
-                IsBusy = false;
-                _navigationService.NavigateTo(PageKey.MainPage);
-                _navigationService.ClearNavigationStack();
+                this.IsBusy = true;
+                await this._authenticationService.LoginAsync(this.Account, this.Username, this.Password);
+                this._vsoDataService.Initialize(this.Account, this.Username, this.Password);
+                this.IsBusy = false;
+                this._navigationService.NavigateTo(PageKey.MainPage);
+                this._navigationService.ClearNavigationStack();
             }
             catch (Exception ex)
             {
-                IsBusy = false;
-                await _dialogService.ShowMessageAsync("Error login", ex.Message);
+                this.IsBusy = false;
+                await this._dialogService.ShowMessageAsync("Error login", ex.Message);
             }
         }
     }

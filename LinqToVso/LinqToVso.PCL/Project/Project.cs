@@ -4,6 +4,9 @@ namespace LinqToVso
 {
     public class Project
     {
+        [JsonIgnore]
+        public const string CapabilitiesKey = "Capabilities";
+
         [JsonProperty("id")]
         public string Id { get; set; }
 
@@ -26,6 +29,6 @@ namespace LinqToVso
         public ProjectLinks ProjectLinks { get; set; }
 
         [JsonProperty("defaultTeam")]
-        public DefaultTeam DefaultTeam { get; set; }
+        public Team DefaultTeam { get; set; }
     }
 }

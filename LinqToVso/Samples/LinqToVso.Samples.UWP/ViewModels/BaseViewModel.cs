@@ -9,7 +9,7 @@ namespace LinqToVso.Samples.UWP.ViewModels
 
         public bool IsBusy
         {
-            get { return _isBusy; }
+            get { return this._isBusy; }
             set { this.Set(() => this.IsBusy, ref this._isBusy, value); }
         }
 

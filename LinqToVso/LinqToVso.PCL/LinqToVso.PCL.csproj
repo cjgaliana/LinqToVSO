@@ -8,7 +8,7 @@
     <ProjectGuid>{09EAA009-458F-44D2-8D90-98EA437CDB9A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LinqToVso.PCL</RootNamespace>
+    <RootNamespace>LinqToVso</RootNamespace>
     <AssemblyName>LinqToVso.PCL</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
@@ -37,10 +37,12 @@
   <ItemGroup>
     <Compile Include="Authorization\BasicAuthHttpClientHandler.cs" />
     <Compile Include="Authorization\OauthHttpClientHandler.cs" />
+    <Compile Include="Common\VsoConstans.cs" />
     <Compile Include="Context\VsoExecute.cs" />
     <Compile Include="Exceptions\LinqToVsoQueryException.cs" />
     <Compile Include="Exceptions\VsoErrorDetails.cs" />
     <Compile Include="Exceptions\VsoErrorHandler.cs" />
+    <Compile Include="Extensions\QueryParameterExtensions.cs" />
     <Compile Include="Factories\VsoRequestProcessorFactory.cs" />
     <Compile Include="Hooks\Hook.cs" />
     <Compile Include="Hooks\HookAction.cs" />
@@ -81,7 +83,6 @@
     <Compile Include="Processes\ProcessRequestProcessor.cs" />
     <Compile Include="Project\Capabilities.cs" />
     <Compile Include="Project\Collection.cs" />
-    <Compile Include="Project\DefaultTeam.cs" />
     <Compile Include="Project\Processtemplate.cs" />
     <Compile Include="Project\ProjectContext.cs" />
     <Compile Include="Project\ProjectLinks.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Context\VsoContextEntities.cs" />
     <Compile Include="Project\Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Common\VsoBaseProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">

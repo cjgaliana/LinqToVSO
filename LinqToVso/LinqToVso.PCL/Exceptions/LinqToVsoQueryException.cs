@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace LinqToVso.PCL.Exceptions
+namespace LinqToVso.Exceptions
 {
     public class LinqToVsoQueryException : Exception
     {

@@ -158,9 +158,7 @@ namespace LinqToVso.Linqify
         protected internal virtual IRequestProcessor<T> CreateRequestProcessor<T>()
             where T : class
         {
-            var requestType = typeof (T).Name;
-
-            var req = this.CreateRequestProcessor<T>(requestType);
+            var req = this.CreateRequestProcessor<T>(typeof(T));
 
             return req;
         }
@@ -179,12 +177,12 @@ namespace LinqToVso.Linqify
                     "Expression passed to CreateRequestProcessor must not be null.");
             }
 
-            var requestType = new MethodCallExpressionTypeFinder().GetGenericType(expression).Name;
+            var requestType = new MethodCallExpressionTypeFinder().GetGenericType(expression);
 
             var req = this.CreateRequestProcessor<T>(requestType);
             return req;
         }
 
-        protected abstract IRequestProcessor<T> CreateRequestProcessor<T>(string requestType) where T : class;
+        protected abstract IRequestProcessor<T> CreateRequestProcessor<T>(Type requestType) where T : class;
     }
 }

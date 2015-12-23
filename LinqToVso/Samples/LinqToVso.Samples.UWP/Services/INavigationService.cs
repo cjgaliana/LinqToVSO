@@ -2,6 +2,7 @@
 using LinqToVso.Samples.UWP.Views;
 using System;
 using System.Collections.Generic;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -33,7 +34,7 @@ namespace LinqToVso.Samples.UWP.Services
 
         public NavigationService()
         {
-            _pages = new Dictionary<PageKey, Type>
+            this._pages = new Dictionary<PageKey, Type>
             {
                 {PageKey.LoginPage, typeof (LoginPage)},
                 {PageKey.MainPage, typeof (MainPage)},
@@ -41,43 +42,53 @@ namespace LinqToVso.Samples.UWP.Services
             };
 
             this.CurrentFrame = (Frame)Window.Current.Content;
+
+            var backButton = SystemNavigationManager.GetForCurrentView();
+            backButton.BackRequested += (s, e) =>
+            {
+                e.Handled = true;
+                this.GoBack();
+            };
         }
 
-        private Frame CurrentFrame { get; set; }
+        private Frame CurrentFrame { get; }
 
         public void GoBack()
         {
-            if (CanGoBack)
+            if (this.CanGoBack)
             {
-                CurrentFrame.GoBack();
+                this.CurrentFrame.GoBack();
+                this.UpdateBackButtonVisibility();
             }
         }
 
-        public bool CanGoBack => CurrentFrame.CanGoBack;
+        public bool CanGoBack => this.CurrentFrame.CanGoBack;
 
         public void NavigateTo(PageKey page)
         {
-            NavigateTo(page, null);
+            this.NavigateTo(page, null);
         }
 
         public void NavigateTo(PageKey page, object parameters)
         {
-            if (!_pages.ContainsKey(page))
+            if (!this._pages.ContainsKey(page))
             {
-                return;
+                throw new ArgumentOutOfRangeException(
+                    $"The target page '{page}' does not exist. Did you have initialized the page dictionary correcty?");
             }
 
-            var pageType = _pages[page];
-            NavigateToPage(pageType, parameters);
-            TitleBarHelper.ShowBackButton();
+            var pageType = this._pages[page];
+            this.NavigateToPage(pageType, parameters);
+
+            this.UpdateBackButtonVisibility();
         }
 
         public void ClearNavigationStack()
         {
             try
             {
-                CurrentFrame.SetNavigationState("1,0");
-                TitleBarHelper.HideBackButton();
+                this.CurrentFrame.BackStack.Clear();
+                this.UpdateBackButtonVisibility();
             }
             catch (Exception ex)
             {
@@ -87,7 +98,19 @@ namespace LinqToVso.Samples.UWP.Services
 
         private void NavigateToPage(Type page, object parameter = null)
         {
-            CurrentFrame.Navigate(page, parameter);
+            this.CurrentFrame.Navigate(page, parameter);
+        }
+
+        private void UpdateBackButtonVisibility()
+        {
+            if (this.CurrentFrame.CanGoBack)
+            {
+                TitleBarHelper.ShowBackButton();
+            }
+            else
+            {
+                TitleBarHelper.HideBackButton();
+            }
         }
     }
 }

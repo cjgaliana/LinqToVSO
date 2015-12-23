@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace LinqToVso.PCL.Hooks
+namespace LinqToVso
 {
     public class PossibleValue
     {

@@ -6,7 +6,7 @@ using LinqToVso.Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LinqToVso.PCL.Team
+namespace LinqToVso
 {
     internal enum NemberRequestType
     {
@@ -14,26 +14,20 @@ namespace LinqToVso.PCL.Team
         TeamRoom
     }
 
-    public class TeamMemberRequestProcessor<T> : IRequestProcessor<T> where T : class
+    public class TeamMemberRequestProcessor<T> : VsoBaseProcessor<T> where T : class
     {
         private string _projectId;
         private NemberRequestType _requestInfoType;
         private string _teamId;
         private string _teamRoomId;
 
-        /// <summary>
-        ///     base url for request
-        /// </summary>
-        public string BaseUrl { get; set; }
-
-        public IList<CustomApiParameter> CustomParameters { get; set; }
 
         /// <summary>
         ///     extracts parameters from lambda
         /// </summary>
         /// <param name="lambdaExpression">lambda expression with where clause</param>
         /// <returns>dictionary of parameter name/value pairs</returns>
-        public virtual Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
+        public override Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
                 new ParameterFinder<TeamMember>(
@@ -56,7 +50,7 @@ namespace LinqToVso.PCL.Team
         /// <param name="parameters">criteria for url segments and parameters</param>
         /// <param name="expressionParameters"></param>
         /// <returns>URL conforming to VSO API</returns>
-        public virtual Request BuildUrl(Dictionary<string, string> expressionParameters)
+        public override Request BuildUrl(Dictionary<string, string> expressionParameters)
         {
             if (expressionParameters.ContainsKey("TeamRoomId"))
             {
@@ -71,7 +65,7 @@ namespace LinqToVso.PCL.Team
             throw new ArgumentException("A TeamRoomId  or ProjectId+TeamID are required to perform this operation");
         }
 
-        public List<T> ProcessResults(string vsoResponse)
+        public override List<T> ProcessResults(string vsoResponse)
         {
             switch (this._requestInfoType)
             {
@@ -97,7 +91,7 @@ namespace LinqToVso.PCL.Team
 
             var url = string.Format("{0}/{1}/{2}/{3}",
                 this.BaseUrl,
-                "_apis/rooms",
+                "rooms",
                 this._teamRoomId,
                 "users");
 
@@ -117,7 +111,7 @@ namespace LinqToVso.PCL.Team
 
             var url = string.Format("{0}/{1}/{2}/{3}/{4}/{5}/",
                 this.BaseUrl,
-                "_apis/projects",
+                "projects",
                 this._projectId,
                 "teams",
                 this._teamId,

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace LinqToVso.PCL.Processes
+namespace LinqToVso
 {
     public class Process
     {

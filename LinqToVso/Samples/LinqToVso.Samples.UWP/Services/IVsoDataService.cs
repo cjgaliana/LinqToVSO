@@ -9,14 +9,12 @@
 
     public class VsoDataService : IVsoDataService
     {
-        private VsoContext _vsoContext;
-
         public void Initialize(string account, string username, string password)
         {
-            this._vsoContext = new VsoContext(account, username, password);
+            this.Context = new VsoContext(account, username, password);
         }
 
-        public VsoContext Context => this._vsoContext;
+        public VsoContext Context { get; private set; }
     }
 
     public class VsoDesignDataService : IVsoDataService

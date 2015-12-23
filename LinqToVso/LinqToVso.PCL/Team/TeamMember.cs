@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace LinqToVso.PCL.Team
+namespace LinqToVso
 {
     public class TeamMember
     {

@@ -1,8 +1,8 @@
-﻿using LinqToVso.Linqify;
-using LinqToVso.Samples.UWP.Services;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LinqToVso.Linqify;
+using LinqToVso.Samples.UWP.Services;
 
 namespace LinqToVso.Samples.UWP.ViewModels
 {
@@ -19,15 +19,15 @@ namespace LinqToVso.Samples.UWP.ViewModels
             IVsoDataService vsoDataService,
             IDialogService dialogService)
         {
-            _navigationService = navigationService;
-            _vsoDataService = vsoDataService;
-            _dialogService = dialogService;
+            this._navigationService = navigationService;
+            this._vsoDataService = vsoDataService;
+            this._dialogService = dialogService;
         }
 
         public Project Project
         {
-            get { return _project; }
-            set { Set(() => Project, ref _project, value); }
+            get { return this._project; }
+            set { this.Set(() => this.Project, ref this._project, value); }
         }
 
         public override async Task OnNavigateTo(object parameter)
@@ -37,13 +37,13 @@ namespace LinqToVso.Samples.UWP.ViewModels
             var project = parameter as Project;
             if (project != null)
             {
-                Project = project;
+                this.Project = project;
                 await this.LoadProjectAsync();
             }
             else
             {
-                await _dialogService.ShowMessageAsync("Navigation error", "Project cannot be null");
-                _navigationService.GoBack();
+                await this._dialogService.ShowMessageAsync("Navigation error", "Project cannot be null");
+                this._navigationService.GoBack();
             }
         }
 

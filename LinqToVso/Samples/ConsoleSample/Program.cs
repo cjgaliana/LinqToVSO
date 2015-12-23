@@ -1,9 +1,8 @@
-﻿using System;
+﻿using LinqToVso;
+using LinqToVso.Linqify;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LinqToVso;
-using LinqToVso.Linqify;
-using LinqToVso.PCL.Hooks;
 
 namespace ConsoleSample
 {
@@ -24,7 +23,15 @@ namespace ConsoleSample
                 var context = new VsoContext("account", "user", "password");
                 //var context = new VsoContext("account", "oauthToken");
 
-                var projects = await context.Projects.ToListAsync();
+                //var projects = await context.Projects.ToListAsync();
+
+                var project = await context.Projects.Skip(5).Take(20).FirstOrDefaultAsync();
+
+                var team = await context.Teams.Where(x => x.ProjectId == project.Id).Skip(100).Take(25).FirstOrDefaultAsync();
+                var teamembers = await context.TeamMembers.
+                    Where(x => x.ProjectId == project.Id
+                            && x.TeamId == team.Id)
+                    .ToListAsync();
 
                 //var teams = await context.Teams
                 //    .Where(x => x.ProjectId == projects.FirstOrDefault().Id)
@@ -55,7 +62,6 @@ namespace ConsoleSample
                 var firstSubscription = await context.Subscriptions
                     .Where(x => x.Id == subscriptions.FirstOrDefault().Id)
                     .FirstOrDefaultAsync();
-
 
                 var teamRooms = await context.TeamRooms.ToListAsync();
                 var firstRoom = await context.TeamRooms.

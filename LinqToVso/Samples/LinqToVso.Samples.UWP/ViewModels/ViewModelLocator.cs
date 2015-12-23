@@ -10,12 +10,14 @@ namespace LinqToVso.Samples.UWP.ViewModels
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
-            RegisterServices();
-            RegisterViewModels();
+            this.RegisterServices();
+            this.RegisterViewModels();
         }
 
         public LoginViewModel LoginViewModel => SimpleIoc.Default.GetInstance<LoginViewModel>();
+
         public MainViewModel MainViewModel => SimpleIoc.Default.GetInstance<MainViewModel>();
+
         public ProjectDetailsViewModel ProjectDetailsViewModel => SimpleIoc.Default.GetInstance<ProjectDetailsViewModel>();
 
         private void RegisterServices()

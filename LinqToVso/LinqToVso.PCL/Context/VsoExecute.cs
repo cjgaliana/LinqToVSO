@@ -1,5 +1,4 @@
 ﻿using LinqToVso.Linqify;
-using LinqToVso.PCL.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +7,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LinqToVso.PCL.Context
+namespace LinqToVso
 {
     public class VsoExecute : ILinqifyExecutor
     {
-        internal const string DefaultUserAgent = "Linq-To-VSO/0.1";
         internal const int DefaultReadWriteTimeout = 300000;
         internal const int DefaultTimeout = 100000;
 

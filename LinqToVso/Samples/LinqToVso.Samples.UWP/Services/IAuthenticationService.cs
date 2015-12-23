@@ -23,9 +23,9 @@ namespace LinqToVso.Samples.UWP.Services
 
         public async Task LoginAsync(string account, string username, string password)
         {
-            CheckValidParameters(account, username, password);
+            this.CheckValidParameters(account, username, password);
 
-            await EnsureValidCredentials(account, username, password);
+            await this.EnsureValidCredentials(account, username, password);
         }
 
         /// <summary>
@@ -47,13 +47,12 @@ namespace LinqToVso.Samples.UWP.Services
                     Convert.ToBase64String(
                         Encoding.ASCII.GetBytes($"{username}:{password}")));
 
-                // Get 1 project from default collection
+                // Get 1 project from default collection in order to test the login credentials
                 var url =
                     $"https://{account}.visualstudio.com/defaultcollection/_apis/projects?api-version={1.0}&$top={1}";
 
                 var response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
             }
         }
 
@@ -80,9 +79,9 @@ namespace LinqToVso.Samples.UWP.Services
     [Obsolete("Use Basic authentication instead")]
     public class WebAuthenticationBrokerService : IAuthenticationService
     {
+        private readonly Uri authorizeUri = new Uri("https://app.vssps.visualstudio.com/oauth2/authorize");
         private string appID = "";
         private string appSecret = "";
-        private readonly Uri authorizeUri = new Uri("https://app.vssps.visualstudio.com/oauth2/authorize");
         private Uri tokenURI = new Uri("https://app.vssps.visualstudio.com/oauth2/token");
 
         public async Task<string> LoginAsync()
@@ -93,8 +92,7 @@ namespace LinqToVso.Samples.UWP.Services
             {
                 var webAuthenticationResult =
                     await WebAuthenticationBroker.AuthenticateAsync(
-                        WebAuthenticationOptions.None,
-                        authorizeUri);
+                        WebAuthenticationOptions.None, this.authorizeUri);
 
                 switch (webAuthenticationResult.ResponseStatus)
                 {

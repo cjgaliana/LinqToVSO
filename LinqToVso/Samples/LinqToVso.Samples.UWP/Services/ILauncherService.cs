@@ -14,13 +14,9 @@ namespace LinqToVso.Samples.UWP.Services
         public async Task OpenWebSiteAsync(string url)
         {
             var success = await Launcher.LaunchUriAsync(new Uri(url));
-            if (success)
+            if (!success)
             {
-                // URI launched
-            }
-            else
-            {
-                // URI launch failed
+                throw new Exception("Is not possible open the requested web site");
             }
         }
     }

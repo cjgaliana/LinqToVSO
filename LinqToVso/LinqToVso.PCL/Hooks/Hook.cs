@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace LinqToVso.PCL.Hooks
+namespace LinqToVso
 {
     public class Hook
     {

@@ -5,14 +5,13 @@ using LinqToVso.Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LinqToVso.PCL.TeamRoom
+namespace LinqToVso
 {
-    public class TeamRoomRequestProcessor<T> : IRequestProcessor<T> where T : class
+    public class TeamRoomRequestProcessor<T> : VsoBaseProcessor<T> where T : class
     {
-        public string BaseUrl { get; set; }
-        public IList<CustomApiParameter> CustomParameters { get; set; }
+      
 
-        public Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
+        public override Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
                 new ParameterFinder<TeamRoom>(
@@ -30,7 +29,7 @@ namespace LinqToVso.PCL.TeamRoom
         /// <param name="parameters">criteria for url segments and parameters</param>
         /// <param name="expressionParameters"></param>
         /// <returns>URL conforming to VSO API</returns>
-        public virtual Request BuildUrl(Dictionary<string, string> expressionParameters)
+        public override Request BuildUrl(Dictionary<string, string> expressionParameters)
         {
             if (expressionParameters.ContainsKey("Id"))
             {
@@ -40,7 +39,7 @@ namespace LinqToVso.PCL.TeamRoom
             return this.GetTeamRoomsUrl(expressionParameters);
         }
 
-        public List<T> ProcessResults(string vsoResponse)
+        public override List<T> ProcessResults(string vsoResponse)
         {
             var json = JObject.Parse(vsoResponse);
 
@@ -56,7 +55,7 @@ namespace LinqToVso.PCL.TeamRoom
         private Request GetTeamRoomsUrl(Dictionary<string, string> expressionParameters)
         {
             // Gerenic call
-            var req = new Request(this.BaseUrl + "/_apis/chat/rooms");
+            var req = new Request(this.BaseUrl + "/chat/rooms");
             var urlParams = req.RequestParameters;
 
             urlParams.Add(new QueryParameter("api-version", "1.0"));
@@ -67,7 +66,7 @@ namespace LinqToVso.PCL.TeamRoom
         {
             var id = expressionParameters["Id"];
 
-            var url = string.Format("{0}{1}{2}", this.BaseUrl, "/_apis/chat/rooms/{0}", id);
+            var url = string.Format("{0}{1}{2}", this.BaseUrl, "/chat/rooms/{0}", id);
             var req = new Request(url);
             var urlParams = req.RequestParameters;
 

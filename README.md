@@ -1,6 +1,6 @@
 # LinqToVSO
 
-For more info, please visit http://cjgaliana.github.io/LinqToVSO
+For more info, please visit the [wiki](https://github.com/cjgaliana/LinqToVSO/wiki)  
 
 In development
 ------------------------

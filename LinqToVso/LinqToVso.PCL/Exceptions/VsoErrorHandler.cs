@@ -1,8 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using LinqToVso.Exceptions;
 
-namespace LinqToVso.PCL.Exceptions
+namespace LinqToVso
 {
     public class VsoErrorHandler
     {

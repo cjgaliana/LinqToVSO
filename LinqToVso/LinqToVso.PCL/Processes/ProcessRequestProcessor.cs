@@ -5,23 +5,18 @@ using LinqToVso.Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace LinqToVso.PCL.Processes
+namespace LinqToVso
 {
-    public class ProcessRequestProcessor<T> : IRequestProcessor<T> where T : class
+    public class ProcessRequestProcessor<T> : VsoBaseProcessor<T> where T : class
     {
-        /// <summary>
-        ///     base url for request
-        /// </summary>
-        public string BaseUrl { get; set; }
-
-        public IList<CustomApiParameter> CustomParameters { get; set; }
+   
 
         /// <summary>
         ///     extracts parameters from lambda
         /// </summary>
         /// <param name="lambdaExpression">lambda expression with where clause</param>
         /// <returns>dictionary of parameter name/value pairs</returns>
-        public virtual Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
+        public override Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
                 new ParameterFinder<Process>(
@@ -39,7 +34,7 @@ namespace LinqToVso.PCL.Processes
         /// <param name="parameters">criteria for url segments and parameters</param>
         /// <param name="expressionParameters"></param>
         /// <returns>URL conforming to VSO API</returns>
-        public virtual Request BuildUrl(Dictionary<string, string> expressionParameters)
+        public override Request BuildUrl(Dictionary<string, string> expressionParameters)
         {
             if (expressionParameters.ContainsKey("Id"))
             {
@@ -48,7 +43,7 @@ namespace LinqToVso.PCL.Processes
 
             var url = string.Format("{0}/{1}/{2}",
                 this.BaseUrl,
-                "_apis/process",
+                "process",
                 "processes");
 
             var req = new Request(url);
@@ -58,7 +53,7 @@ namespace LinqToVso.PCL.Processes
             return req;
         }
 
-        public List<T> ProcessResults(string vsoResponse)
+        public override List<T> ProcessResults(string vsoResponse)
         {
             var json = JObject.Parse(vsoResponse);
 
@@ -79,7 +74,7 @@ namespace LinqToVso.PCL.Processes
             var id = expressionParameters["Id"];
             var url = string.Format("{0}/{1}/{2}/{3}",
                 this.BaseUrl,
-                "_apis/process",
+                "process",
                 "processes",
                 id);
 
