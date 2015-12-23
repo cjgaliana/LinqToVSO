@@ -1,10 +1,10 @@
-﻿using System;
+﻿using LinqToVso.Linqify;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using LinqToVso.Linqify;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace LinqToVso
 {
@@ -12,7 +12,6 @@ namespace LinqToVso
     {
         private HookType _hookType;
 
-  
         /// <summary>
         ///     extracts parameters from lambda
         /// </summary>
@@ -45,7 +44,7 @@ namespace LinqToVso
 
             var type = expressionParameters["Type"];
 
-            this._hookType = (HookType) Enum.Parse(typeof (HookType), type);
+            this._hookType = (HookType)Enum.Parse(typeof(HookType), type);
             switch (this._hookType)
             {
                 case HookType.Publisher:
@@ -76,10 +75,7 @@ namespace LinqToVso
 
         private Request BuildConsumerUrl(Dictionary<string, string> expressionParameters)
         {
-            var url = string.Format("{0}/{1}/{2}",
-                this.BaseUrl,
-                "hooks",
-                "consumers");
+            var url = Utilities.CombineUrls(this.BaseUrl, "hooks", "consumers");
 
             var req = new Request(url);
             var urlParams = req.RequestParameters;
@@ -90,10 +86,7 @@ namespace LinqToVso
 
         private Request BuildPublisherUrl(Dictionary<string, string> expressionParameters)
         {
-            var url = string.Format("{0}/{1}/{2}",
-                this.BaseUrl,
-                "hooks",
-                "publishers");
+            var url = Utilities.CombineUrls(this.BaseUrl, "hooks", "publishers");
 
             var req = new Request(url);
             var urlParams = req.RequestParameters;
@@ -106,9 +99,9 @@ namespace LinqToVso
         {
             var json = JObject.Parse(vsoResponse);
 
-            if (this.IsSingleHookDetailsResponse(json))
+            if (this.IsSingleItemDetailsResponse(json))
             {
-                return this.ProccessSinlgeResult(vsoResponse);
+                return this.ProccessSingleItemResult(vsoResponse);
             }
 
             var serverData = json["value"].Children().ToList();
@@ -123,23 +116,15 @@ namespace LinqToVso
             }
 
             return resultList.OfType<T>().ToList();
-        }
-
-        private bool IsSingleHookDetailsResponse(JObject json)
-        {
-            JToken token = null;
-            json.TryGetValue("value", out token);
-
-            return token == null;
         }
 
         private List<T> ProccessConsumerResult(string vsoResponse)
         {
             var json = JObject.Parse(vsoResponse);
 
-            if (this.IsSingleHookDetailsResponse(json))
+            if (this.IsSingleItemDetailsResponse(json))
             {
-                return this.ProccessSinlgeResult(vsoResponse);
+                return this.ProccessSingleItemResult(vsoResponse);
             }
 
             var serverData = json["value"].Children().ToList();
@@ -154,12 +139,6 @@ namespace LinqToVso
             }
 
             return resultList.OfType<T>().ToList();
-        }
-
-        private List<T> ProccessSinlgeResult(string vsoResponse)
-        {
-            var item = JsonConvert.DeserializeObject<T>(vsoResponse);
-            return new List<T> {item};
         }
     }
 }

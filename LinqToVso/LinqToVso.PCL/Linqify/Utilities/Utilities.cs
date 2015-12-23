@@ -35,5 +35,18 @@ namespace LinqToVso.Linqify
 
             return builder.ToString();
         }
+
+        /// <summary>
+        /// A simple "Path.Combine-like-ish" method for URLs
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <returns></returns>
+        public static string CombineUrls(params string[] paths)
+        {
+            var sanitizedPaths = paths.Select(x => x.Trim('/')).ToArray();
+
+            var finalString = string.Join("/", sanitizedPaths);
+            return finalString;
+        }
     }
 }

@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using LinqToVso.Extensions;
 using LinqToVso.Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LinqToVso
 {
@@ -21,12 +22,6 @@ namespace LinqToVso
         private string _teamId;
         private string _teamRoomId;
 
-
-        /// <summary>
-        ///     extracts parameters from lambda
-        /// </summary>
-        /// <param name="lambdaExpression">lambda expression with where clause</param>
-        /// <returns>dictionary of parameter name/value pairs</returns>
         public override Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
@@ -44,12 +39,6 @@ namespace LinqToVso
                     .Parameters;
         }
 
-        /// <summary>
-        ///     builds url based on input parameters
-        /// </summary>
-        /// <param name="parameters">criteria for url segments and parameters</param>
-        /// <param name="expressionParameters"></param>
-        /// <returns>URL conforming to VSO API</returns>
         public override Request BuildUrl(Dictionary<string, string> expressionParameters)
         {
             if (expressionParameters.ContainsKey("TeamRoomId"))
@@ -71,14 +60,11 @@ namespace LinqToVso
             {
                 case NemberRequestType.Team:
                     return this.ParseTeamMemberResults(vsoResponse);
-                    break;
 
                 case NemberRequestType.TeamRoom:
                     return this.ParseTeamRoomMemberResults(vsoResponse);
-                    break;
 
                 default:
-                    //throw new ArgumentOutOfRangeException("Its not possible parse the Member Info results.");
                     throw new ArgumentOutOfRangeException("RequestInfoType",
                         "It's not possible parse the response because the deserializer info is needed");
             }
@@ -89,16 +75,13 @@ namespace LinqToVso
             this._teamRoomId = expressionParameters["TeamRoomId"];
             this._requestInfoType = NemberRequestType.TeamRoom;
 
-            var url = string.Format("{0}/{1}/{2}/{3}",
-                this.BaseUrl,
+            var url = Utilities.CombineUrls(this.BaseUrl,
                 "rooms",
                 this._teamRoomId,
                 "users");
 
             var req = new Request(url);
-            var urlParams = req.RequestParameters;
-
-            urlParams.Add(new QueryParameter("api-version", "1.0"));
+            req.AddApiVersionParameter(this.ApiVersion);
             return req;
         }
 
@@ -109,8 +92,7 @@ namespace LinqToVso
 
             this._requestInfoType = NemberRequestType.Team;
 
-            var url = string.Format("{0}/{1}/{2}/{3}/{4}/{5}/",
-                this.BaseUrl,
+            var url = Utilities.CombineUrls(this.BaseUrl,
                 "projects",
                 this._projectId,
                 "teams",
@@ -118,23 +100,22 @@ namespace LinqToVso
                 "members");
 
             var req = new Request(url);
-            var urlParams = req.RequestParameters;
 
             if (expressionParameters.ContainsKey(TakeClauseFinder.TakeMethodName))
             {
-                urlParams.Add(new QueryParameter("$top", expressionParameters[TakeClauseFinder.TakeMethodName]));
+                req.AddParameter("$top", expressionParameters[TakeClauseFinder.TakeMethodName]);
             }
 
             if (expressionParameters.ContainsKey(SkipClauseFinder.SkipMethodName))
             {
-                urlParams.Add(new QueryParameter("$skip", expressionParameters[SkipClauseFinder.SkipMethodName]));
+                req.AddParameter("$skip", expressionParameters[SkipClauseFinder.SkipMethodName]);
             }
 
-            urlParams.Add(new QueryParameter("api-version", "1.0"));
+            req.AddApiVersionParameter(this.ApiVersion);
             return req;
         }
 
-        public List<T> ParseTeamMemberResults(string vsoResponse)
+        private List<T> ParseTeamMemberResults(string vsoResponse)
         {
             var json = JObject.Parse(vsoResponse);
             var serverData = json["value"].Children().ToList();
@@ -153,15 +134,13 @@ namespace LinqToVso
             return resultList.OfType<T>().ToList();
         }
 
-        public List<T> ParseTeamRoomMemberResults(string vsoResponse)
+        private List<T> ParseTeamRoomMemberResults(string vsoResponse)
         {
-            //JObject json = JObject.Parse(vsoResponse);
-
             var json = JObject.Parse(vsoResponse);
 
-            if (this.IsSingleProjectDetailsResponse(json))
+            if (this.IsSingleItemDetailsResponse(json))
             {
-                return this.ProccessSinlgeResult(vsoResponse);
+                return this.ProccessSingleItemResult(vsoResponse);
             }
 
             // Parse multiple users
@@ -184,20 +163,6 @@ namespace LinqToVso
             }
 
             return resultList.OfType<T>().ToList();
-        }
-
-        private List<T> ProccessSinlgeResult(string vsoResponse)
-        {
-            var item = JsonConvert.DeserializeObject<T>(vsoResponse);
-            return new List<T> {item};
-        }
-
-        private bool IsSingleProjectDetailsResponse(JObject json)
-        {
-            JToken token = null;
-            json.TryGetValue("value", out token);
-
-            return token == null;
         }
     }
 }

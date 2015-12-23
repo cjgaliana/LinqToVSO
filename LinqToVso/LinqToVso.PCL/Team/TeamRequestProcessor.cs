@@ -3,13 +3,14 @@
 // TeamRequestProcessor.cs
 // 19 / 07 / 2015
 
+using LinqToVso.Extensions;
+using LinqToVso.Linqify;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using LinqToVso.Linqify;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace LinqToVso
 {
@@ -17,12 +18,6 @@ namespace LinqToVso
     {
         private string _projectId;
 
-
-        /// <summary>
-        ///     extracts parameters from lambda
-        /// </summary>
-        /// <param name="lambdaExpression">lambda expression with where clause</param>
-        /// <returns>dictionary of parameter name/value pairs</returns>
         public override Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
@@ -40,12 +35,6 @@ namespace LinqToVso
                     .Parameters;
         }
 
-        /// <summary>
-        ///     builds url based on input parameters
-        /// </summary>
-        /// <param name="parameters">criteria for url segments and parameters</param>
-        /// <param name="expressionParameters"></param>
-        /// <returns>URL conforming to VSO API</returns>
         public override Request BuildUrl(Dictionary<string, string> expressionParameters)
         {
             if (!expressionParameters.ContainsKey("ProjectId"))
@@ -60,35 +49,34 @@ namespace LinqToVso
 
             this._projectId = expressionParameters["ProjectId"];
 
-            var url = string.Format("{0}/{1}/{2}/{3}",
+            var url = Utilities.CombineUrls(
                 this.BaseUrl,
                 "projects",
                 this._projectId,
                 "teams");
             var req = new Request(url);
-            var urlParams = req.RequestParameters;
 
             if (expressionParameters.ContainsKey(TakeClauseFinder.TakeMethodName))
             {
-                urlParams.Add(new QueryParameter("$top", expressionParameters[TakeClauseFinder.TakeMethodName]));
+                req.AddParameter("$top", expressionParameters[TakeClauseFinder.TakeMethodName]);
             }
 
             if (expressionParameters.ContainsKey(SkipClauseFinder.SkipMethodName))
             {
-                urlParams.Add(new QueryParameter("$skip", expressionParameters[SkipClauseFinder.SkipMethodName]));
+                req.AddParameter("$skip", expressionParameters[SkipClauseFinder.SkipMethodName]);
             }
 
-            urlParams.Add(new QueryParameter("api-version", "1.0"));
+            req.AddApiVersionParameter(this.ApiVersion);
             return req;
         }
 
-        public override  List<T> ProcessResults(string vsoResponse)
+        public override List<T> ProcessResults(string vsoResponse)
         {
             var json = JObject.Parse(vsoResponse);
 
-            if (this.IsSingleProjectDetailsResponse(json))
+            if (this.IsSingleItemDetailsResponse(json))
             {
-                return this.ProccessSinlgeResult(vsoResponse);
+                return this.ProccessSingleItemResult(vsoResponse);
             }
 
             var serverData = json["value"].Children().ToList();
@@ -110,7 +98,7 @@ namespace LinqToVso
             var projectId = expressionParameters["ProjectId"];
             var teamId = expressionParameters["Id"];
 
-            var url = string.Format("{0}/{1}/{2}/{3}/{4}",
+            var url = Utilities.CombineUrls(
                 this.BaseUrl,
                 "projects",
                 projectId,
@@ -118,27 +106,17 @@ namespace LinqToVso
                 teamId);
 
             var req = new Request(url);
-            var urlParams = req.RequestParameters;
-
-            urlParams.Add(new QueryParameter("api-version", "1.0"));
+            req.AddApiVersionParameter(this.ApiVersion);
             return req;
         }
 
-        private List<T> ProccessSinlgeResult(string vsoResponse)
+        public override List<T> ProccessSingleItemResult(string vsoResponse)
         {
             var item = JsonConvert.DeserializeObject<Team>(vsoResponse);
             item.ProjectId = this._projectId;
 
-            var list = new List<Team> {item};
+            var list = new List<Team> { item };
             return list.OfType<T>().ToList();
-        }
-
-        private bool IsSingleProjectDetailsResponse(JObject json)
-        {
-            JToken token = null;
-            json.TryGetValue("value", out token);
-
-            return token == null;
         }
     }
 }

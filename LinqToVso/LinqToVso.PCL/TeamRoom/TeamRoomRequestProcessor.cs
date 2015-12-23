@@ -1,16 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using LinqToVso.Extensions;
 using LinqToVso.Linqify;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LinqToVso
 {
     public class TeamRoomRequestProcessor<T> : VsoBaseProcessor<T> where T : class
     {
-      
-
         public override Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
@@ -23,12 +22,6 @@ namespace LinqToVso
                     .Parameters;
         }
 
-        /// <summary>
-        ///     builds url based on input parameters
-        /// </summary>
-        /// <param name="parameters">criteria for url segments and parameters</param>
-        /// <param name="expressionParameters"></param>
-        /// <returns>URL conforming to VSO API</returns>
         public override Request BuildUrl(Dictionary<string, string> expressionParameters)
         {
             if (expressionParameters.ContainsKey("Id"))
@@ -43,9 +36,9 @@ namespace LinqToVso
         {
             var json = JObject.Parse(vsoResponse);
 
-            if (this.IsSingleProjectDetailsResponse(json))
+            if (this.IsSingleItemDetailsResponse(json))
             {
-                return this.ProccessSinlgeResult(vsoResponse);
+                return this.ProccessSingleItemResult(vsoResponse);
             }
 
             var serverData = json["value"].Children().ToList();
@@ -54,11 +47,10 @@ namespace LinqToVso
 
         private Request GetTeamRoomsUrl(Dictionary<string, string> expressionParameters)
         {
-            // Gerenic call
-            var req = new Request(this.BaseUrl + "/chat/rooms");
-            var urlParams = req.RequestParameters;
-
-            urlParams.Add(new QueryParameter("api-version", "1.0"));
+            // Generic call
+            var url = Utilities.CombineUrls(this.BaseUrl, "chat/rooms");
+            var req = new Request(url);
+            req.AddApiVersionParameter(this.ApiVersion);
             return req;
         }
 
@@ -66,26 +58,11 @@ namespace LinqToVso
         {
             var id = expressionParameters["Id"];
 
-            var url = string.Format("{0}{1}{2}", this.BaseUrl, "/chat/rooms/{0}", id);
+            var url = Utilities.CombineUrls(this.BaseUrl, "/chat/rooms/", id);
+
             var req = new Request(url);
-            var urlParams = req.RequestParameters;
-
-            urlParams.Add(new QueryParameter("api-version", "1.0"));
+            req.AddApiVersionParameter(this.ApiVersion);
             return req;
-        }
-
-        private List<T> ProccessSinlgeResult(string vsoResponse)
-        {
-            var item = JsonConvert.DeserializeObject<T>(vsoResponse);
-            return new List<T> {item};
-        }
-
-        private bool IsSingleProjectDetailsResponse(JObject json)
-        {
-            JToken token = null;
-            json.TryGetValue("value", out token);
-
-            return token == null;
         }
     }
 }

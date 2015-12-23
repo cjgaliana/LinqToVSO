@@ -18,11 +18,6 @@ namespace LinqToVso
     /// </summary>
     public class ProjectRequestProcessor<T> : VsoBaseProcessor<T> where T : class
     {
-        /// <summary>
-        ///     extracts parameters from lambda
-        /// </summary>
-        /// <param name="lambdaExpression">lambda expression with where clause</param>
-        /// <returns>dictionary of parameter name/value pairs</returns>
         public override Dictionary<string, string> GetParameters(LambdaExpression lambdaExpression)
         {
             return
@@ -38,12 +33,6 @@ namespace LinqToVso
                     .Parameters;
         }
 
-        /// <summary>
-        ///     builds url based on input parameters
-        /// </summary>
-        /// <param name="parameters">criteria for url segments and parameters</param>
-        /// <param name="expressionParameters"></param>
-        /// <returns>URL conforming to VSO API</returns>
         public override Request BuildUrl(Dictionary<string, string> expressionParameters)
         {
             return expressionParameters.ContainsKey("Id")
@@ -55,9 +44,9 @@ namespace LinqToVso
         {
             var json = JObject.Parse(vsoResponse);
 
-            if (this.IsSingleProjectDetailsResponse(json))
+            if (this.IsSingleItemDetailsResponse(json))
             {
-                return this.ProccessSinlgeResult(vsoResponse);
+                return this.ProccessSingleItemResult(vsoResponse);
             }
 
             var serverData = json["value"].Children().ToList();
@@ -67,7 +56,8 @@ namespace LinqToVso
         private Request GetTeamProjectsUrl(Dictionary<string, string> expressionParameters)
         {
             // Generic call
-            var req = new Request(this.BaseUrl + "/projects");
+            var endpoint = Utilities.CombineUrls(this.BaseUrl, "projects");
+            var req = new Request(endpoint);
 
             if (expressionParameters.ContainsKey("State"))
             {
@@ -93,8 +83,8 @@ namespace LinqToVso
         {
             var id = expressionParameters["Id"];
 
-            var url = string.Format("{0}{1}{2}", this.BaseUrl, "/projects/", id);
-            var req = new Request(url);
+            var endpoint = Utilities.CombineUrls(this.BaseUrl, "projects", id);
+            var req = new Request(endpoint);
 
             if (this.CustomParameters != null && this.CustomParameters.Any(x => x.Value.ToString() == Project.CapabilitiesKey))
             {
@@ -103,20 +93,6 @@ namespace LinqToVso
 
             req.AddApiVersionParameter(this.ApiVersion);
             return req;
-        }
-
-        private List<T> ProccessSinlgeResult(string vsoResponse)
-        {
-            var item = JsonConvert.DeserializeObject<T>(vsoResponse);
-            return new List<T> { item };
-        }
-
-        private bool IsSingleProjectDetailsResponse(JObject json)
-        {
-            JToken token = null;
-            json.TryGetValue("value", out token);
-
-            return token == null;
         }
     }
 }
