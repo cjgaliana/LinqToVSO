@@ -62,7 +62,7 @@ namespace LinqToVso.Samples.UWP.ViewModels
             {
                 this.IsBusy = true;
                 this.Projects = await this._dataService.Context.Projects.ToListAsync();
-                this.Processes = await this._dataService.Context.Processes.Where(x=>x.Id == processId).ToListAsync();
+                this.Processes = await this._dataService.Context.Processes.ToListAsync();
                 this.IsBusy = false;
             }
             catch (Exception ex)
