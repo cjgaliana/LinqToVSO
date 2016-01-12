@@ -12,7 +12,7 @@
 
     <local:BasePage.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <converters:ItemClickConverter x:Key="ItemClickConverter" />
+        <!--<converters:ItemClickConverter x:Key="ItemClickConverter" />-->
     </local:BasePage.Resources>
 
     <local:BasePage.DataContext>

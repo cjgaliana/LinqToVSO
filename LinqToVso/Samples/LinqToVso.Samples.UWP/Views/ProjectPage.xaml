@@ -5,10 +5,47 @@
     xmlns:local="using:LinqToVso.Samples.UWP.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:converters="using:LinqToVso.Samples.UWP.Converters"
     mc:Ignorable="d"
     DataContext="{Binding ProjectDetailsViewModel, Source={StaticResource ViewModelLocator}}">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <local:BasePage.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </local:BasePage.Resources>
 
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <GridView
+            Header="Project Teams"
+            ItemsSource="{Binding Teams}"
+            SelectionMode="None"
+            IsItemClickEnabled="True"
+            Padding="52" >
+
+            <GridView.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderThickness="2" BorderBrush="{StaticResource AccentBrush}">
+                        <StackPanel Margin="8">
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="{Binding Description}" />
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+
+            <interactivity:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="ItemClick">
+                    <core:InvokeCommandAction Command="{Binding OpenTeamCommand, Mode=OneWay}" InputConverter="{StaticResource ItemClickConverter}" />
+                </core:EventTriggerBehavior>
+            </interactivity:Interaction.Behaviors>
+        </GridView>
+
+        <ProgressRing IsActive="True" Height="50" Width="50"
+            Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+        <CommandBar VerticalAlignment="Bottom">
+            <AppBarButton Icon="Refresh" Label="Refresh" Command="{Binding RefreshCommand}" />
+        </CommandBar>
     </Grid>
 </local:BasePage>

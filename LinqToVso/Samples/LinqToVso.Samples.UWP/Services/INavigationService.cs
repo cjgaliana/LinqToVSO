@@ -12,7 +12,9 @@ namespace LinqToVso.Samples.UWP.Services
     {
         LoginPage,
         MainPage,
-        ProjectPage
+        ProjectPage,
+        TeamPage,
+        TeamMemberPage
     }
 
     public interface INavigationService
@@ -38,7 +40,9 @@ namespace LinqToVso.Samples.UWP.Services
             {
                 {PageKey.LoginPage, typeof (LoginPage)},
                 {PageKey.MainPage, typeof (MainPage)},
-                {PageKey.ProjectPage, typeof (ProjectPage)}
+                {PageKey.ProjectPage, typeof (ProjectPage)},
+                {PageKey.TeamPage, typeof (TeamPage)},
+                {PageKey.TeamMemberPage, typeof (TeamMemberPage)}
             };
 
             this.CurrentFrame = (Frame)Window.Current.Content;
