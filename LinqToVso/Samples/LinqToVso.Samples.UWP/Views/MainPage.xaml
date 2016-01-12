@@ -41,6 +41,68 @@
                 </GridView>
             </PivotItem>
 
+            <PivotItem Header="Consumer Hooks">
+                <GridView  ItemsSource="{Binding ConsumerHooks}" SelectionMode="None" IsItemClickEnabled="True">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="2" BorderBrush="{StaticResource AccentBrush}">
+                                <StackPanel Margin="8">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding Description}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <Interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="ItemClick">
+                            <Core:InvokeCommandAction Command="{Binding OpenHookCommand, Mode=OneWay}" InputConverter="{StaticResource ItemClickConverter}" />
+                        </Core:EventTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+                </GridView>
+            </PivotItem>
+
+            <PivotItem Header="Publisher Hooks">
+                <GridView  ItemsSource="{Binding PublisherHooks}" SelectionMode="None" IsItemClickEnabled="True">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="2" BorderBrush="{StaticResource AccentBrush}">
+                                <StackPanel Margin="8">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding Description}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <Interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="ItemClick">
+                            <Core:InvokeCommandAction Command="{Binding OpenHookCommand, Mode=OneWay}" InputConverter="{StaticResource ItemClickConverter}" />
+                        </Core:EventTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+                </GridView>
+            </PivotItem>
+
+
+            <PivotItem Header="Subscriptions">
+                <GridView  ItemsSource="{Binding Subscriptions}" SelectionMode="None" IsItemClickEnabled="True">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="2" BorderBrush="{StaticResource AccentBrush}">
+                                <StackPanel Margin="8">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding Description}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <Interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="ItemClick">
+                            <Core:InvokeCommandAction Command="{Binding OpenSubscriptionCommand, Mode=OneWay}" InputConverter="{StaticResource ItemClickConverter}" />
+                        </Core:EventTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+                </GridView>
+            </PivotItem>
+
+            
             <PivotItem Header="Processes">
                 <GridView  ItemsSource="{Binding Processes}" SelectionMode="None" IsItemClickEnabled="True">
                     <GridView.ItemTemplate>

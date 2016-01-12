@@ -15,7 +15,8 @@ namespace LinqToVso.Samples.UWP.Services
         ProjectPage,
         TeamPage,
         TeamMemberPage,
-        ProcessPage
+        ProcessPage,
+        HookPage
     }
 
     public interface INavigationService
@@ -44,7 +45,8 @@ namespace LinqToVso.Samples.UWP.Services
                 {PageKey.ProjectPage, typeof (ProjectPage)},
                 {PageKey.TeamPage, typeof (TeamPage)},
                 {PageKey.ProcessPage, typeof (ProcessPage)},
-                {PageKey.TeamMemberPage, typeof (TeamMemberPage)}
+                {PageKey.TeamMemberPage, typeof (TeamMemberPage)},
+                {PageKey.HookPage, typeof (HookDetailsPage)}
             };
 
             this.CurrentFrame = (Frame)Window.Current.Content;

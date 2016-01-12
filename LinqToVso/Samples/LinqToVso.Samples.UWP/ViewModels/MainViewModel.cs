@@ -14,9 +14,12 @@ namespace LinqToVso.Samples.UWP.ViewModels
         private readonly IVsoDataService _dataService;
         private readonly IDialogService _dialogService;
         private readonly INavigationService _navigationService;
+        private IList<Hook> _consumerHooks;
+        private IList<Process> _processes;
 
         private IList<Project> _projects = new List<Project>();
-        private IList<Process> _processes;
+        private IList<Hook> _publisherHooks;
+        private IList<Subscription> _subscriptions;
 
         public MainViewModel(INavigationService navigationService, IVsoDataService dataService,
             IDialogService dialogService)
@@ -28,11 +31,18 @@ namespace LinqToVso.Samples.UWP.ViewModels
             this.RefreshCommand = new RelayCommand(async () => await this.RefreshProjectsAsync());
             this.OpenProjectCommand = new RelayCommand<Project>(this.OpenProjectDetails);
             this.OpenProcessCommand = new RelayCommand<Process>(this.OpenProcessDetails);
+            this.OpenHookCommand = new RelayCommand<Hook>(this.OpenHookDetails);
+            this.OpenSubscriptionCommand = new RelayCommand<Subscription>(subscription =>
+            {
+                /*TODO*/
+            });
         }
 
         public ICommand RefreshCommand { get; }
         public ICommand OpenProjectCommand { get; private set; }
         public ICommand OpenProcessCommand { get; private set; }
+        public ICommand OpenHookCommand { get; private set; }
+        public ICommand OpenSubscriptionCommand { get; private set; }
 
         public IList<Project> Projects
         {
@@ -46,6 +56,24 @@ namespace LinqToVso.Samples.UWP.ViewModels
             set { this.Set(() => this.Processes, ref this._processes, value); }
         }
 
+        public IList<Hook> ConsumerHooks
+        {
+            get { return this._consumerHooks; }
+            set { this.Set(() => this.ConsumerHooks, ref this._consumerHooks, value); }
+        }
+
+        public IList<Hook> PublisherHooks
+        {
+            get { return this._publisherHooks; }
+            set { this.Set(() => this.PublisherHooks, ref this._publisherHooks, value); }
+        }
+
+        public IList<Subscription> Subscriptions
+        {
+            get { return this._subscriptions; }
+            set { this.Set(() => this.Subscriptions, ref this._subscriptions, value); }
+        }
+
         private void OpenProjectDetails(Project project)
         {
             this._navigationService.NavigateTo(PageKey.ProjectPage, project);
@@ -56,6 +84,11 @@ namespace LinqToVso.Samples.UWP.ViewModels
             this._navigationService.NavigateTo(PageKey.ProcessPage, process);
         }
 
+        private void OpenHookDetails(Hook hook)
+        {
+            this._navigationService.NavigateTo(PageKey.HookPage, hook);
+        }
+
         private async Task RefreshProjectsAsync()
         {
             try
@@ -63,6 +96,12 @@ namespace LinqToVso.Samples.UWP.ViewModels
                 this.IsBusy = true;
                 this.Projects = await this._dataService.Context.Projects.ToListAsync();
                 this.Processes = await this._dataService.Context.Processes.ToListAsync();
+                this.ConsumerHooks =
+                    await this._dataService.Context.Hooks.Where(x => x.Type == HookType.Consumer).ToListAsync();
+                this.PublisherHooks =
+                    await this._dataService.Context.Hooks.Where(x => x.Type == HookType.Publisher).ToListAsync();
+                this.Subscriptions = await this._dataService.Context.Subscriptions.ToListAsync();
+
                 this.IsBusy = false;
             }
             catch (Exception ex)
@@ -83,7 +122,5 @@ namespace LinqToVso.Samples.UWP.ViewModels
 
             this.RefreshCommand.Execute(null);
         }
-
-
     }
 }
