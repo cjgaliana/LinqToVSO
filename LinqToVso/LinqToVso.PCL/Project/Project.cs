@@ -26,7 +26,7 @@ namespace LinqToVso
         public Capabilities Capabilities { get; set; }
 
         [JsonProperty("_links")]
-        public ProjectLinks ProjectLinks { get; set; }
+        public VsoLink VsoLink { get; set; }
 
         [JsonProperty("defaultTeam")]
         public Team DefaultTeam { get; set; }

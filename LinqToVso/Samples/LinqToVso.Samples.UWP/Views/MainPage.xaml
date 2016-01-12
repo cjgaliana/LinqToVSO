@@ -7,8 +7,7 @@
     xmlns:local="using:LinqToVso.Samples.UWP.Views"
     xmlns:Interactivity="using:Microsoft.Xaml.Interactivity" xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
     x:Class="LinqToVso.Samples.UWP.Views.MainPage"
-    mc:Ignorable="d"
-    >
+    mc:Ignorable="d">
 
     <local:BasePage.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -16,28 +15,52 @@
     </local:BasePage.Resources>
 
     <local:BasePage.DataContext>
-        <Binding Path="MainViewModel" Source="{StaticResource ViewModelLocator}"/>
+        <Binding Path="MainViewModel" Source="{StaticResource ViewModelLocator}" />
     </local:BasePage.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <!-- TODO Create hamburger menu to split data-->
+        <Pivot Padding="52">
+            <PivotItem Header="Projects">
+                <GridView  ItemsSource="{Binding Projects}" SelectionMode="None" IsItemClickEnabled="True">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="2" BorderBrush="{StaticResource AccentBrush}">
+                                <StackPanel Margin="8">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding Description}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <Interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="ItemClick">
+                            <Core:InvokeCommandAction Command="{Binding OpenProjectCommand, Mode=OneWay}" InputConverter="{StaticResource ItemClickConverter}" />
+                        </Core:EventTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+                </GridView>
+            </PivotItem>
 
-        <GridView Padding="52" ItemsSource="{Binding Projects}" SelectionMode="None" IsItemClickEnabled="True">
-            <GridView.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderThickness="2" BorderBrush="{StaticResource AccentBrush}">
-                        <StackPanel Margin="8">
-                            <TextBlock Text="{Binding Name}" />
-                            <TextBlock Text="{Binding Description}" />
-                        </StackPanel>
-                    </Border>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-            <Interactivity:Interaction.Behaviors>
-                <Core:EventTriggerBehavior EventName="ItemClick">
-                    <Core:InvokeCommandAction Command="{Binding OpenProjectCommand, Mode=OneWay}" InputConverter="{StaticResource ItemClickConverter}"/>
-                </Core:EventTriggerBehavior>
-            </Interactivity:Interaction.Behaviors>
-        </GridView>
+            <PivotItem Header="Processes">
+                <GridView  ItemsSource="{Binding Processes}" SelectionMode="None" IsItemClickEnabled="True">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="2" BorderBrush="{StaticResource AccentBrush}">
+                                <StackPanel Margin="8">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding Description}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <Interactivity:Interaction.Behaviors>
+                        <Core:EventTriggerBehavior EventName="ItemClick">
+                            <Core:InvokeCommandAction Command="{Binding OpenProcessCommand, Mode=OneWay}" InputConverter="{StaticResource ItemClickConverter}" />
+                        </Core:EventTriggerBehavior>
+                    </Interactivity:Interaction.Behaviors>
+                </GridView>
+            </PivotItem>
+        </Pivot>
 
         <ProgressRing IsActive="True" Height="50" Width="50"
             Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />

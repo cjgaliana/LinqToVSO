@@ -14,7 +14,8 @@ namespace LinqToVso.Samples.UWP.Services
         MainPage,
         ProjectPage,
         TeamPage,
-        TeamMemberPage
+        TeamMemberPage,
+        ProcessPage
     }
 
     public interface INavigationService
@@ -42,6 +43,7 @@ namespace LinqToVso.Samples.UWP.Services
                 {PageKey.MainPage, typeof (MainPage)},
                 {PageKey.ProjectPage, typeof (ProjectPage)},
                 {PageKey.TeamPage, typeof (TeamPage)},
+                {PageKey.ProcessPage, typeof (ProcessPage)},
                 {PageKey.TeamMemberPage, typeof (TeamMemberPage)}
             };
 

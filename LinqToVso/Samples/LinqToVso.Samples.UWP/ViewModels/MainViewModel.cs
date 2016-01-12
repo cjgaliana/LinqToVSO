@@ -16,6 +16,7 @@ namespace LinqToVso.Samples.UWP.ViewModels
         private readonly INavigationService _navigationService;
 
         private IList<Project> _projects = new List<Project>();
+        private IList<Process> _processes;
 
         public MainViewModel(INavigationService navigationService, IVsoDataService dataService,
             IDialogService dialogService)
@@ -26,10 +27,12 @@ namespace LinqToVso.Samples.UWP.ViewModels
 
             this.RefreshCommand = new RelayCommand(async () => await this.RefreshProjectsAsync());
             this.OpenProjectCommand = new RelayCommand<Project>(this.OpenProjectDetails);
+            this.OpenProcessCommand = new RelayCommand<Process>(this.OpenProcessDetails);
         }
 
         public ICommand RefreshCommand { get; }
         public ICommand OpenProjectCommand { get; private set; }
+        public ICommand OpenProcessCommand { get; private set; }
 
         public IList<Project> Projects
         {
@@ -37,9 +40,20 @@ namespace LinqToVso.Samples.UWP.ViewModels
             set { this.Set(() => this.Projects, ref this._projects, value); }
         }
 
+        public IList<Process> Processes
+        {
+            get { return this._processes; }
+            set { this.Set(() => this.Processes, ref this._processes, value); }
+        }
+
         private void OpenProjectDetails(Project project)
         {
             this._navigationService.NavigateTo(PageKey.ProjectPage, project);
+        }
+
+        private void OpenProcessDetails(Process process)
+        {
+            this._navigationService.NavigateTo(PageKey.ProcessPage, process);
         }
 
         private async Task RefreshProjectsAsync()
@@ -48,7 +62,7 @@ namespace LinqToVso.Samples.UWP.ViewModels
             {
                 this.IsBusy = true;
                 this.Projects = await this._dataService.Context.Projects.ToListAsync();
-
+                this.Processes = await this._dataService.Context.Processes.Where(x=>x.Id == processId).ToListAsync();
                 this.IsBusy = false;
             }
             catch (Exception ex)
@@ -69,5 +83,7 @@ namespace LinqToVso.Samples.UWP.ViewModels
 
             this.RefreshCommand.Execute(null);
         }
+
+
     }
 }

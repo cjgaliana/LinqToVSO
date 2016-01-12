@@ -13,8 +13,8 @@ namespace LinqToVso
         [JsonProperty("isDefault")]
         public bool IsDefault { get; set; }
 
-        //[JsonProperty("_links")]
-        //public Links Links { get; set; }
+        [JsonProperty("_links")]
+        public VsoLink Links { get; set; }
 
         [JsonProperty("url")]
         public string Url { get; set; }

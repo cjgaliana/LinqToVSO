@@ -19,8 +19,12 @@ namespace LinqToVso.Samples.UWP.ViewModels
         public MainViewModel MainViewModel => SimpleIoc.Default.GetInstance<MainViewModel>();
 
         public ProjectDetailsViewModel ProjectDetailsViewModel => SimpleIoc.Default.GetInstance<ProjectDetailsViewModel>();
+
         public TeamViewModel TeamViewModel => SimpleIoc.Default.GetInstance<TeamViewModel>();
+
         public TeamMemberDetailsViewModel TeamMemberDetailsViewModel => SimpleIoc.Default.GetInstance<TeamMemberDetailsViewModel>();
+
+        public ProcessViewModel ProcessViewModel => SimpleIoc.Default.GetInstance<ProcessViewModel>();
 
         private void RegisterServices()
         {
@@ -39,6 +43,7 @@ namespace LinqToVso.Samples.UWP.ViewModels
             SimpleIoc.Default.Register<ProjectDetailsViewModel>();
             SimpleIoc.Default.Register<TeamViewModel>();
             SimpleIoc.Default.Register<TeamMemberDetailsViewModel>();
+            SimpleIoc.Default.Register<ProcessViewModel>();
         }
     }
 }

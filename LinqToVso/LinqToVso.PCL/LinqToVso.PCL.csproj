@@ -85,7 +85,7 @@
     <Compile Include="Project\Collection.cs" />
     <Compile Include="Project\Processtemplate.cs" />
     <Compile Include="Project\ProjectContext.cs" />
-    <Compile Include="Project\ProjectLinks.cs" />
+    <Compile Include="Project\VsoLink.cs" />
     <Compile Include="Project\ProjectRequestProcessor.cs" />
     <Compile Include="Project\ProjectState.cs" />
     <Compile Include="Project\Self.cs" />

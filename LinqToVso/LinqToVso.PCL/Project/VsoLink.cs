@@ -2,7 +2,7 @@
 
 namespace LinqToVso
 {
-    public class ProjectLinks
+    public class VsoLink
     {
         [JsonProperty("self")]
         public Self Self { get; set; }
